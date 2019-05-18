@@ -1,0 +1,5 @@
+tests/loadtest/.token
+tests/loadtest/logs/
+src/.env
+.env
+.idea/
