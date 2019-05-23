@@ -22,5 +22,6 @@ func InitConfig() {
 
 		cfg.Auth = os.Getenv("AUTH_HOST")
 		cfg.Position = os.Getenv("POSITION_HOST")
+		cfg.Billing = os.Getenv("BILLING_HOST")
 	}
 }
