@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func Proxy(request *http.Request, url string, data interface{}) error {
+func Proxy(request *http.Request, url string, data interface{}, error interface{}) error {
 	spaceClient := http.Client{
 		Timeout: time.Second * 2, // Maximum of 2 secs
 	}
@@ -38,6 +38,11 @@ func Proxy(request *http.Request, url string, data interface{}) error {
 	jsonErr := json.Unmarshal(body, &response)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
+	}
+
+	if 400 == res.StatusCode {
+		Decode(&error, response)
+		return nil
 	}
 
 	Decode(&data, response)

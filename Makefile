@@ -1,6 +1,6 @@
 DOCKER_COMPOSE_VERSION=1.24.0
 NAMESPACE=sr2020
-SERVICE := gateway
+SERVICE := platform
 IMAGE := $(or ${image},${image},eva-gateway)
 TAG := :$(or ${tag},${tag},latest)
 ENV := $(or ${env},${env},local)
@@ -17,8 +17,8 @@ push:
 deploy:
 	{ \
 	sshpass -p $(password) ssh -o StrictHostKeyChecking=no deploy@$(server) "cd /var/services/$(SERVICE) ;\
-	docker-compose pull app ;\
-	docker-compose up -d --no-deps app" ;\
+	docker-compose pull gateway-app ;\
+	docker-compose up -d --no-deps gateway-app" ;\
 	}
 
 deploy-local:

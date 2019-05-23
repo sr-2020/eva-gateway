@@ -10,6 +10,7 @@ type Config struct {
 	Port     int
 	Auth     string
 	Position string
+	Billing  string
 }
 
 var cfg Config

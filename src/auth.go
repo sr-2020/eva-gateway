@@ -15,5 +15,5 @@ type AuthUser struct {
 }
 
 func GetAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	Proxy(r, "http://auth.evarun.ru/api/v1/profile", &authUser)
+	Proxy(r, "http://auth.evarun.ru/api/v1/profile", &authUser, nil)
 }
