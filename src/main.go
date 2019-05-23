@@ -7,10 +7,11 @@ import (
 	"strconv"
 )
 
-var authUser AuthUser
+
 
 func main() {
 	InitConfig()
+	InitClient()
 
 	router := httprouter.New()
 	router.GET("/api/v1/users", GetUsers)

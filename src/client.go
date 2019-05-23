@@ -10,11 +10,15 @@ import (
 	"time"
 )
 
-func Proxy(request *http.Request, url string, data interface{}, error interface{}) error {
-	spaceClient := http.Client{
+var httpClient *http.Client
+
+func InitClient() {
+	httpClient = &http.Client{
 		Timeout: time.Second * 2, // Maximum of 2 secs
 	}
+}
 
+func Proxy(request *http.Request, url string, data interface{}, error interface{}) error {
 	req, err := http.NewRequest(request.Method, url, request.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -23,7 +27,7 @@ func Proxy(request *http.Request, url string, data interface{}, error interface{
 	req.Header = request.Header
 	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
 
-	res, getErr := spaceClient.Do(req)
+	res, getErr := httpClient.Do(req)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}
@@ -51,10 +55,6 @@ func Proxy(request *http.Request, url string, data interface{}, error interface{
 }
 
 func Auth(request *http.Request, url string, data interface{}) error {
-	spaceClient := http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs
-	}
-
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +62,7 @@ func Auth(request *http.Request, url string, data interface{}) error {
 
 	req.Header.Set("Authorization", request.Header.Get("Authorization"))
 
-	res, getErr := spaceClient.Do(req)
+	res, getErr := httpClient.Do(req)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}

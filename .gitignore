@@ -3,3 +3,6 @@ tests/loadtest/logs/
 src/.env
 .env
 .idea/
+*.env
+*/*.env
+docker-compose.override.yml

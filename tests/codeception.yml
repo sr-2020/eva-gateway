@@ -1,0 +1,29 @@
+# suite config
+suites:
+    local:
+      actor: ApiTester
+      path: .
+      modules:
+        enabled:
+        - REST:
+            url: http://localhost:7000/api/v1
+            depends: PhpBrowser
+
+    production:
+        actor: ApiTester
+        path: .
+        modules:
+            enabled:
+                - REST:
+                    url: http://gateway.evarun.ru/api/v1
+                    depends: PhpBrowser
+
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+
+settings:
+    shuffle: false
+    lint: true

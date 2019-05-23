@@ -4,12 +4,12 @@ tank:
   token_file: .token
 
 phantom:
-  address: localhost:7070
+  address: localhost:7000
   uris:
     - /api/v1/users
   load_profile:
     load_type: rps
-    schedule: const(10, 10s)
+    schedule: const(100, 30s)
   instances: 1
 console:
   enabled: true

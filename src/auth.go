@@ -14,6 +14,8 @@ type AuthUser struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+var authUser AuthUser
+
 func GetAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	Proxy(r, "http://auth.evarun.ru/api/v1/profile", &authUser, nil)
 }
