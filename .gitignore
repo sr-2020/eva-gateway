@@ -1,5 +1,6 @@
 tests/loadtest/.token
 tests/loadtest/logs/
+tests/tests/_output/*
 src/.env
 .env
 .idea/

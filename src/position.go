@@ -73,13 +73,33 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func PostPositions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	Auth(r, cfg.Auth + "/api/v1/profile", &authUser)
+	Auth(r)
 
 	var position PositionUser
 
 	Proxy(r, cfg.Position + "/api/v1/positions", &position, nil)
 
 	response, err := json.Marshal(position)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, string(response))
+}
+
+func PositionService(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	path := "/api/v1" + ps.ByName("path")
+
+	Auth(r)
+
+	var resp interface{}
+	res, err := ProxyLite(r, cfg.Position + path, &resp)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.WriteHeader(res.StatusCode)
+	response, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatal(err)
 	}

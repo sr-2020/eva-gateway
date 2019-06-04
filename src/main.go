@@ -19,5 +19,11 @@ func main() {
 	router.POST("/api/v1/transfer", PostTransfer)
 	router.GET("/api/v1/account_info", GetAccountInfo)
 
+	router.GET("/api/v1/billing/*path", BillingService)
+	router.POST("/api/v1/billing/*path", BillingService)
+
+	router.GET("/api/v1/position/*path", PositionService)
+	router.POST("/api/v1/position/*path", PositionService)
+
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router))
 }

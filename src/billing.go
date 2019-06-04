@@ -21,18 +21,13 @@ type Transfer struct {
 	CreatedAt          string `json:"created_at"`
 }
 
-type BillingErrorWrap struct {
-	Error BillingError `json:"error"`
+func AccountInfoMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+	Auth(r)
+	return ps.ByName("path") + "/" + strconv.Itoa(authUser.Id)
 }
 
-type BillingError struct {
-	StatusCode int    `json:"statusCode"`
-	Name       string `json:"name"`
-	Message    string `json:"message"`
-}
-
-func PostTransfer(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	Auth(r, cfg.Auth+"/api/v1/profile", &authUser)
+func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+	Auth(r)
 
 	body, readErr := ioutil.ReadAll(r.Body)
 	if readErr != nil {
@@ -56,36 +51,28 @@ func PostTransfer(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	rc := ioutil.NopCloser(t)
 	r.Body = rc
 
-	var rTransfer interface{}
-	var billingError BillingErrorWrap
+	return ps.ByName("path")
+}
 
-	Proxy(r, cfg.Billing+"/transfer", &rTransfer, &billingError)
+func BillingService(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	path := ps.ByName("path")
 
-	if 400 == billingError.Error.StatusCode {
-		response, err := json.Marshal(billingError)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(400)
-		fmt.Fprint(w, string(response))
-		return
+	switch path {
+	case "/account_info":
+		path = AccountInfoMiddleware(w, r, ps)
+	case "/transfer":
+		path = TransferMiddleware(w, r, ps)
+	default:
+		//
 	}
 
-	response, err := json.Marshal(rTransfer)
+	var resp interface{}
+	res, err := ProxyLite(r, cfg.Billing + path, &resp)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Fprint(w, string(response))
-}
-
-func GetAccountInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	Auth(r, cfg.Auth+"/api/v1/profile", &authUser)
-
-	var resp interface{}
-
-	Proxy(r, cfg.Billing+"/account_info/"+strconv.Itoa(authUser.Id), &resp, nil)
-
+	w.WriteHeader(res.StatusCode)
 	response, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatal(err)

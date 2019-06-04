@@ -56,3 +56,8 @@ test:
 
 load:
 	docker run -v $(current_dir)/tests/loadtest:/var/loadtest --net host --entrypoint /usr/local/bin/yandex-tank -it direvius/yandex-tank -c production.yaml
+
+dev-test:
+	make build
+	make up
+	make test
