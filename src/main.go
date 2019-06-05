@@ -25,5 +25,9 @@ func main() {
 	router.GET("/api/v1/position/*path", PositionService)
 	router.POST("/api/v1/position/*path", PositionService)
 
+	router.GET("/api/v1/auth/*path", AuthService)
+	router.POST("/api/v1/auth/*path", AuthService)
+	router.PUT("/api/v1/auth/*path", AuthService)
+
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router))
 }

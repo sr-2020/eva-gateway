@@ -2,6 +2,7 @@ tests/loadtest/.token
 tests/loadtest/logs/
 tests/tests/_output/*
 src/.env
+src/go_build_gateway
 .env
 .idea/
 *.env

@@ -14,7 +14,7 @@ var httpClient *http.Client
 
 func InitClient() {
 	httpClient = &http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs
+		Timeout: time.Second * 5,
 	}
 }
 
@@ -77,7 +77,8 @@ func ProxyLite(request *http.Request, url string, data interface{}) (*http.Respo
 
 	jsonErr := json.Unmarshal(body, &response)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		Decode(&data, jsonErr.Error())
+		return res, nil
 	}
 
 	Decode(&data, response)
