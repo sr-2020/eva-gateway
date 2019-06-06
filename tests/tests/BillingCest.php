@@ -44,7 +44,6 @@ class BillingCest
     public function createTrancationsTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
         $I->sendPOST('/billing/transactions', [
             'id' => 0,
             'created_at' => '2019-06-04T06:21:20.456Z',
@@ -73,7 +72,21 @@ class BillingCest
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
         $I->sendPOST('/billing/transfer', [
             'sin_to' => 77,
-            'amount' => 100,
+            'amount' => 90,
+            'comment' => 'Test transfer'
+        ]);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([]);
+    }
+
+    public function oldTransferSuccessTest(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
+        $I->sendPOST('/transfer', [
+            'sin_to' => 77,
+            'amount' => 10,
             'comment' => 'Test transfer'
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);

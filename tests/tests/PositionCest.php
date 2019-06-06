@@ -36,4 +36,20 @@ class PositionCest
             'created_at' => 'string',
         ]);
     }
+
+    public function createPositionFailTest(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer test');
+        $I->sendPOST('/position/positions', [
+            'beacons' => [
+                [
+                    'ssid' => 'beacon1',
+                    'bssid' => 'b0:0a:95:9d:00:0a',
+                    'level' => -50
+                ]
+            ]
+        ]);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
+    }
 }

@@ -51,8 +51,8 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var positionUsers []PositionUser
 	var authUsers []AuthUser
 
-	Proxy(r, cfg.Position + "/api/v1/users", &positionUsers, nil)
-	Proxy(r, cfg.Auth + "/api/v1/users", &authUsers, nil)
+	Proxy(r, cfg.Position + "/api/v1/users", &positionUsers)
+	Proxy(r, cfg.Auth + "/api/v1/users", &authUsers)
 
 	temp := Positions{}
 	for i, v := range authUsers {
@@ -77,29 +77,9 @@ func PostPositions(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	var position PositionUser
 
-	Proxy(r, cfg.Position + "/api/v1/positions", &position, nil)
+	Proxy(r, cfg.Position + "/api/v1/positions", &position)
 
 	response, err := json.Marshal(position)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Fprint(w, string(response))
-}
-
-func PositionService(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	path := "/api/v1" + ps.ByName("path")
-
-	Auth(r)
-
-	var resp interface{}
-	res, err := ProxyLite(r, cfg.Position + path, &resp)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.WriteHeader(res.StatusCode)
-	response, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatal(err)
 	}

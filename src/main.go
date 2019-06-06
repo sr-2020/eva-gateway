@@ -19,15 +19,9 @@ func main() {
 	router.POST("/api/v1/transfer", PostTransfer)
 	router.GET("/api/v1/account_info", GetAccountInfo)
 
-	router.GET("/api/v1/billing/*path", BillingService)
-	router.POST("/api/v1/billing/*path", BillingService)
-
-	router.GET("/api/v1/position/*path", PositionService)
-	router.POST("/api/v1/position/*path", PositionService)
-
-	router.GET("/api/v1/auth/*path", AuthService)
-	router.POST("/api/v1/auth/*path", AuthService)
-	router.PUT("/api/v1/auth/*path", AuthService)
+	ServiceRouter(router, "/api/v1/auth/*path", Service(cfg.Auth + "/api/v1", MiddlewareMap.Auth))
+	ServiceRouter(router, "/api/v1/billing/*path", Service(cfg.Billing, MiddlewareMap.Billing))
+	ServiceRouter(router, "/api/v1/position/*path", Service(cfg.Position + "/api/v1", MiddlewareMap.Position))
 
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router))
 }

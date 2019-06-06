@@ -35,7 +35,11 @@ func PostTransfer(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 		log.Fatal(jsonErr)
 	}
 
-	transfer.From = authUser.Id
+	sin, err := strconv.Atoi(r.Header.Get("X-User-Id"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	transfer.From = sin
 
 	bodyRequest, err := json.Marshal(transfer)
 	if err != nil {
@@ -49,7 +53,7 @@ func PostTransfer(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	var rTransfer interface{}
 	var billingError BillingErrorWrap
 
-	Proxy(r, cfg.Billing+"/transfer", &rTransfer, &billingError)
+	ProxyOld(r, cfg.Billing+"/transfer", &rTransfer, &billingError)
 
 	if 400 == billingError.Error.StatusCode {
 		response, err := json.Marshal(billingError)
@@ -74,7 +78,7 @@ func GetAccountInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 
 	var resp interface{}
 
-	Proxy(r, cfg.Billing+"/account_info/"+strconv.Itoa(authUser.Id), &resp, nil)
+	Proxy(r, cfg.Billing+"/account_info/" + r.Header.Get("X-User-Id"), &resp)
 
 	response, err := json.Marshal(resp)
 	if err != nil {

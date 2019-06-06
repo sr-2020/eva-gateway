@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type AuthUser struct {
@@ -17,38 +18,44 @@ type AuthUser struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-var authUser AuthUser
-
-func GetAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	Proxy(r, "http://auth.evarun.ru/api/v1/profile", &authUser, nil)
-}
-
-func ProfileMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
 	Auth(r)
-	return "/api/v1" + ps.ByName("path")
+	return ps.ByName("path")
 }
 
-func AuthService(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	path := "/api/v1" + ps.ByName("path")
+func Auth(request *http.Request) error {
+	return AuthRequest(request, cfg.Auth + "/api/v1/profile", nil)
+}
 
-	switch path {
-	case "/profile":
-		path = ProfileMiddleware(w, r, ps)
-	default:
-		//
-	}
-
-	var resp interface{}
-	res, err := ProxyLite(r, cfg.Auth + path, &resp)
+func AuthRequest(request *http.Request, url string, data interface{}) error {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w.WriteHeader(res.StatusCode)
-	response, err := json.Marshal(resp)
-	if err != nil {
-		log.Fatal(err)
+	req.Header.Set("Authorization", request.Header.Get("Authorization"))
+
+	res, getErr := httpClient.Do(req)
+	if getErr != nil {
+		log.Fatal(getErr)
 	}
 
-	fmt.Fprint(w, string(response))
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	var response interface{}
+	jsonErr := json.Unmarshal(body, &response)
+	if jsonErr != nil {
+		log.Print(jsonErr)
+		return jsonErr
+	}
+
+	var authUser AuthUser
+	Decode(&authUser, response)
+
+	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
+
+	return nil
 }

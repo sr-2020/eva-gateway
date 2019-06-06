@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"io/ioutil"
 	"log"
@@ -22,13 +21,11 @@ type Transfer struct {
 }
 
 func AccountInfoMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
-	Auth(r)
-	return ps.ByName("path") + "/" + strconv.Itoa(authUser.Id)
+	sin := r.Header.Get("X-User-Id")
+	return ps.ByName("path") + "/" + sin
 }
 
 func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
-	Auth(r)
-
 	body, readErr := ioutil.ReadAll(r.Body)
 	if readErr != nil {
 		log.Fatal(readErr)
@@ -40,7 +37,11 @@ func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		log.Fatal(jsonErr)
 	}
 
-	transfer.From = authUser.Id
+	sin, err := strconv.Atoi(r.Header.Get("X-User-Id"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	transfer.From = sin
 
 	bodyRequest, err := json.Marshal(transfer)
 	if err != nil {
@@ -52,31 +53,4 @@ func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	r.Body = rc
 
 	return ps.ByName("path")
-}
-
-func BillingService(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	path := ps.ByName("path")
-
-	switch path {
-	case "/account_info":
-		path = AccountInfoMiddleware(w, r, ps)
-	case "/transfer":
-		path = TransferMiddleware(w, r, ps)
-	default:
-		//
-	}
-
-	var resp interface{}
-	res, err := ProxyLite(r, cfg.Billing + path, &resp)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.WriteHeader(res.StatusCode)
-	response, err := json.Marshal(resp)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Fprint(w, string(response))
 }
