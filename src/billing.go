@@ -20,12 +20,13 @@ type Transfer struct {
 	CreatedAt          string `json:"created_at"`
 }
 
-func AccountInfoMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+func AccountInfoMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
 	sin := r.Header.Get("X-User-Id")
-	return ps.ByName("path") + "/" + sin
+	r.URL.Path = ps.ByName("path") + "/" + sin
+	return nil
 }
 
-func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
 	body, readErr := ioutil.ReadAll(r.Body)
 	if readErr != nil {
 		log.Fatal(readErr)
@@ -52,5 +53,5 @@ func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	rc := ioutil.NopCloser(t)
 	r.Body = rc
 
-	return ps.ByName("path")
+	return nil
 }

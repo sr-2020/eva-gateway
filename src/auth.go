@@ -18,9 +18,9 @@ type AuthUser struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) string {
+func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
 	Auth(r)
-	return ps.ByName("path")
+	return nil
 }
 
 func Auth(request *http.Request) error {

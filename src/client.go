@@ -52,8 +52,8 @@ func ProxyOld(request *http.Request, url string, data interface{}, error interfa
 	return nil
 }
 
-func Proxy(request *http.Request, url string, data interface{}) (*http.Response, error) {
-	req, err := http.NewRequest(request.Method, url, request.Body)
+func Proxy(request *http.Request, data interface{}) (*http.Response, error) {
+	req, err := http.NewRequest(request.Method, request.URL.String(), request.Body)
 	if err != nil {
 		log.Fatal(err)
 	}

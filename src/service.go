@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 func ServiceRouter(router *httprouter.Router, path string, handle httprouter.Handle) {
@@ -18,21 +19,28 @@ func ServiceRouter(router *httprouter.Router, path string, handle httprouter.Han
 func Service(path string, middlewares ServiceMiddleware) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		p := ps.ByName("path")
+		url, err := url.Parse(path + p)
+		if err != nil {
+			log.Fatal(err)
+		}
+		r.URL = url
 
 		for _, middleware := range middlewares.Global {
-			p = middleware(w, r, ps)
+			if err := middleware(w, r, ps); err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		if routeMiddlewares, ok := middlewares.Route[p]; ok {
 			for _, middleware := range routeMiddlewares {
-				p = middleware(w, r, ps)
+				if err := middleware(w, r, ps); err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 
-		url := path + p
-
 		var resp interface{}
-		res, err := Proxy(r, url, &resp)
+		res, err := Proxy(r, &resp)
 		if err != nil {
 			log.Fatal(err)
 		}

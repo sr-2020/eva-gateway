@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type Middleware func(http.ResponseWriter, *http.Request, httprouter.Params) string
+type Middleware func(http.ResponseWriter, *http.Request, httprouter.Params) error
 
 type Middlewares struct {
 	Billing ServiceMiddleware

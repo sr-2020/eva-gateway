@@ -78,7 +78,7 @@ func GetAccountInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 
 	var resp interface{}
 
-	Proxy(r, cfg.Billing+"/account_info/" + r.Header.Get("X-User-Id"), &resp)
+	ProxyOld(r, cfg.Billing+"/account_info/" + r.Header.Get("X-User-Id"), &resp, nil)
 
 	response, err := json.Marshal(resp)
 	if err != nil {
