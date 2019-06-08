@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-var Services map[string]Service
-
 func main() {
 	InitConfig()
 	InitClient()

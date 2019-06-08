@@ -16,6 +16,8 @@ type Service struct {
 	Middleware ServiceMiddleware
 }
 
+var Services map[string]Service
+
 func InitService() {
 	Services = map[string]Service{
 		"auth": {
