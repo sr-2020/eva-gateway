@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -9,14 +10,46 @@ import (
 	"net/url"
 )
 
-func ServiceRouter(router *httprouter.Router, path string, handle httprouter.Handle) {
-	router.GET(path, handle)
-	router.POST(path, handle)
-	router.PUT(path, handle)
-	router.DELETE(path, handle)
+type Service struct {
+	Host string
+	Path string
+	Middleware ServiceMiddleware
 }
 
-func Service(path string, middlewares ServiceMiddleware) httprouter.Handle {
+func InitService() {
+	Services = map[string]Service{
+		"auth": {
+			Host: cfg.Auth,
+			Path: "/api/v1",
+			Middleware: MiddlewareMap.Auth,
+		},
+		"billing": {
+			Host: cfg.Billing,
+			Path: "",
+			Middleware: MiddlewareMap.Billing,
+		},
+		"position": {
+			Host: cfg.Position,
+			Path: "/api/v1",
+			Middleware: MiddlewareMap.Position,
+		},
+	}
+}
+
+func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
+	if service, ok := Services[serviceName]; ok {
+		handle := ServiceRegister(service.Host + service.Path, service.Middleware)
+
+		router.GET(path, handle)
+		router.POST(path, handle)
+		router.PUT(path, handle)
+		router.DELETE(path, handle)
+	} else {
+		log.Fatal(errors.New("Unknown service " + serviceName))
+	}
+}
+
+func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		p := ps.ByName("path")
 		url, err := url.Parse(path + p)

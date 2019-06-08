@@ -2,7 +2,7 @@
 
 class PositionCest
 {
-    static protected $route = '/account_info';
+    static protected $route = '/position';
 
     static protected $data;
 
@@ -10,7 +10,7 @@ class PositionCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendGET('/position/positions');
+        $I->sendGET(self::$route . '/positions');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
     }
@@ -19,7 +19,7 @@ class PositionCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendPOST('/position/positions', [
+        $I->sendPOST(self::$route . '/positions', [
             'beacons' => [
                 [
                     'ssid' => 'beacon1',
@@ -41,7 +41,7 @@ class PositionCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer test');
-        $I->sendPOST('/position/positions', [
+        $I->sendPOST(self::$route . '/positions', [
             'beacons' => [
                 [
                     'ssid' => 'beacon1',

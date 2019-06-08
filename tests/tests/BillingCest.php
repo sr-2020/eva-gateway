@@ -2,28 +2,15 @@
 
 class BillingCest
 {
-    static protected $route = '/account_info';
+    static protected $route = '/billing';
 
     static protected $data;
-
-    public function oldReadTest(ApiTester $I)
-    {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendGET(self::$route);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
-        $I->seeResponseIsJson();
-        $I->seeResponseMatchesJsonType([
-            'balance' => 'integer',
-            'history' => 'array'
-        ]);
-    }
 
     public function transactionsTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendGET('/billing/transactions');
+        $I->sendGET(self::$route . '/transactions');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
     }
@@ -32,7 +19,7 @@ class BillingCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendGET('/billing/account_info');
+        $I->sendGET(self::$route . '/account_info');
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([
@@ -44,7 +31,7 @@ class BillingCest
     public function createTrancationsTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/billing/transactions', [
+        $I->sendPOST(self::$route . '/transactions', [
             'id' => 0,
             'created_at' => '2019-06-04T06:21:20.456Z',
             'sin_from' => 0,
@@ -70,23 +57,9 @@ class BillingCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendPOST('/billing/transfer', [
+        $I->sendPOST(self::$route . '/transfer', [
             'sin_to' => 77,
             'amount' => 90,
-            'comment' => 'Test transfer'
-        ]);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
-        $I->seeResponseIsJson();
-        $I->seeResponseMatchesJsonType([]);
-    }
-
-    public function oldTransferSuccessTest(ApiTester $I)
-    {
-        $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendPOST('/transfer', [
-            'sin_to' => 77,
-            'amount' => 10,
             'comment' => 'Test transfer'
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
@@ -98,7 +71,7 @@ class BillingCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
-        $I->sendPOST('/billing/transfer', [
+        $I->sendPOST(self::$route . '/transfer', [
             'sin_to' => 77,
             'amount' => 100000000,
             'comment' => 'Test transfer'
