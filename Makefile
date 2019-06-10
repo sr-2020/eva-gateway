@@ -58,7 +58,11 @@ test:
 load:
 	docker run -v $(current_dir)/tests/loadtest:/var/loadtest --net host --entrypoint /usr/local/bin/yandex-tank -it direvius/yandex-tank -c production.yaml
 
-dev-test:
+test-dev:
 	make build
 	make up
 	make test
+
+database-dump-update:
+	wget -O database/auth.sql https://raw.githubusercontent.com/sr-2020/eva-auth/master/docker/mysql/dump.sql
+	wget -O database/position.sql https://raw.githubusercontent.com/sr-2020/eva-position/master/docker/mysql/dump.sql

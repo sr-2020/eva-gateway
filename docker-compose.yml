@@ -59,7 +59,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - eva-platform-database:/var/lib/mysql
-      - ./database/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - ./database:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: test
       MYSQL_USER: ${MYSQL_USER}
