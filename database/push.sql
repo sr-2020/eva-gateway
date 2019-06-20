@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.16, for Linux (x86_64)
 --
--- Host: localhost    Database: billing
+-- Host: localhost    Database: push
 -- ------------------------------------------------------
 -- Server version	8.0.16
 
@@ -15,24 +15,19 @@ SET NAMES utf8mb4 ;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Current Database: `eva-auth`
---
+CREATE DATABASE IF NOT EXISTS `push`;
 
-CREATE DATABASE IF NOT EXISTS `billing`;
+USE `push`;
 
-USE `billing`;
+CREATE TABLE `firebase_tokens` (
+    `id` int(11) NOT NULL,
+    `token` varchar(200) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `transactions` (
-  `id` int(11),
-  `created_at` datetime NOT NULL,
-  `sin_from` int(11) NOT NULL,
-  `sin_to` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `comment` text,
-  `recurrent_payment_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+ALTER TABLE `firebase_tokens`
+    ADD PRIMARY KEY (`id`),
+    ADD UNIQUE KEY `id_UNIQUE` (`id`);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

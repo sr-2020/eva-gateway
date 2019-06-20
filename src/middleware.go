@@ -11,6 +11,7 @@ type Middlewares struct {
 	Billing ServiceMiddleware
 	Auth ServiceMiddleware
 	Position ServiceMiddleware
+	Push ServiceMiddleware
 }
 
 type ServiceMiddleware struct {
@@ -41,6 +42,12 @@ var MiddlewareMap = Middlewares{
 		},
 	},
 	Position: ServiceMiddleware{
+		Global: []Middleware{
+			AuthMiddleware,
+		},
+		Route: nil,
+	},
+	Push: ServiceMiddleware{
 		Global: []Middleware{
 			AuthMiddleware,
 		},

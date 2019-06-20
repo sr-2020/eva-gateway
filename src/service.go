@@ -35,6 +35,11 @@ func InitService() {
 			Path: "/api/v1",
 			Middleware: MiddlewareMap.Position,
 		},
+		"push": {
+			Host: cfg.Push,
+			Path: "",
+			Middleware: MiddlewareMap.Push,
+		},
 	}
 }
 

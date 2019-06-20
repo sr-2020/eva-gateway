@@ -11,6 +11,7 @@ type Config struct {
 	Auth     string
 	Position string
 	Billing  string
+	Push  string
 }
 
 var cfg Config
@@ -23,5 +24,6 @@ func InitConfig() {
 		cfg.Auth = os.Getenv("AUTH_HOST")
 		cfg.Position = os.Getenv("POSITION_HOST")
 		cfg.Billing = os.Getenv("BILLING_HOST")
+		cfg.Push = os.Getenv("PUSH_HOST")
 	}
 }

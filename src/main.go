@@ -19,6 +19,7 @@ func main() {
 	ServiceRouter(router, "/api/v1/auth/*path", "auth")
 	ServiceRouter(router, "/api/v1/billing/*path", "billing")
 	ServiceRouter(router, "/api/v1/position/*path", "position")
+	ServiceRouter(router, "/api/v1/push/*path", "push")
 
 	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router))
 }
