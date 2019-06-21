@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type AuthUser struct {
@@ -18,9 +19,81 @@ type AuthUser struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
+type AuthLogin struct {
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	FirebaseToken string `json:"firebase_token"`
+}
+
+type AuthUserToken struct {
+	Id        int    `json:"id"`
+	ApiKey    string `json:"api_key"`
+}
+
+type  PushToken struct {
+	Id        int    `json:"id"`
+	Token     string  `json:"token"`
+}
+
+func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
 	Auth(r)
-	return nil
+	return nil, nil
+}
+
+func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
+
+	body, readErr := ioutil.ReadAll(r.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	var authLogin AuthLogin
+	jsonErr := json.Unmarshal(body, &authLogin)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	r.Body = ioutil.NopCloser(strings.NewReader(string(body)))
+	if authLogin.FirebaseToken == "" {
+		return nil, nil
+	}
+
+	var resp interface{}
+	res, err := Proxy(r, &resp)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bodyResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res.Body = ioutil.NopCloser(strings.NewReader(string(bodyResp)))
+
+	if res.StatusCode == 200 {
+		var authToken AuthUserToken
+		Decode(&authToken, resp)
+
+		token := PushToken{
+			Id: authToken.Id,
+			Token: authLogin.FirebaseToken,
+		}
+
+		bodyRequest, err := json.Marshal(token)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		t := strings.NewReader(string(bodyRequest))
+		rc := ioutil.NopCloser(t)
+		r.Body = rc
+
+		r.Method = "PUT"
+		var pushResp interface{}
+		ProxyOld(r, cfg.Push + "/save_token", &pushResp, nil)
+	}
+
+	return res, nil
 }
 
 func Auth(request *http.Request) error {

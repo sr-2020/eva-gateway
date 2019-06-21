@@ -83,6 +83,22 @@ class AuthCest
         self::$createdApiKey = $jsonResponse->api_key;
     }
 
+    public function loginWithFirebaseTokenTest(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        self::$testCreds['firebase_token'] = 'testtoken';
+        $I->sendPOST(self::$route . '/login', self::$testCreds);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([
+            'id' => 'integer',
+            'api_key' => 'string'
+        ]);
+
+        $jsonResponse = json_decode($I->grabResponse());
+        self::$createdApiKey = $jsonResponse->api_key;
+    }
+
     public function profileAfterLoginTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');

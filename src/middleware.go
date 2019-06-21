@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type Middleware func(http.ResponseWriter, *http.Request, httprouter.Params) error
+type Middleware func(http.ResponseWriter, *http.Request, httprouter.Params) (*http.Response, error)
 
 type Middlewares struct {
 	Billing ServiceMiddleware
@@ -25,6 +25,9 @@ var MiddlewareMap = Middlewares{
 		Route: map[string][]Middleware{
 			"/profile": {
 				AuthMiddleware,
+			},
+			"/login": {
+				LoginMiddleware,
 			},
 		},
 	},
