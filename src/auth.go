@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type AuthUser struct {
@@ -42,18 +41,12 @@ func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 
 func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
 
-	body, readErr := ioutil.ReadAll(r.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	var authLogin AuthLogin
-	jsonErr := json.Unmarshal(body, &authLogin)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
+	if err := getBodyToInterface(&r.Body, &authLogin); err != nil {
+		log.Fatal(err)
+		return nil, err
 	}
 
-	r.Body = ioutil.NopCloser(strings.NewReader(string(body)))
 	if authLogin.FirebaseToken == "" {
 		return nil, nil
 	}
@@ -62,13 +55,13 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	res, err := Proxy(r, &resp)
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
-	bodyResp, err := json.Marshal(resp)
-	if err != nil {
+	if err := setInterfaceToBody(resp, &res.Body); err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
-	res.Body = ioutil.NopCloser(strings.NewReader(string(bodyResp)))
 
 	if res.StatusCode == 200 {
 		var authToken AuthUserToken
@@ -79,18 +72,17 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 			Token: authLogin.FirebaseToken,
 		}
 
-		bodyRequest, err := json.Marshal(token)
-		if err != nil {
+		if err := setInterfaceToBody(token, &r.Body); err != nil {
 			log.Fatal(err)
+			return nil, err
 		}
-
-		t := strings.NewReader(string(bodyRequest))
-		rc := ioutil.NopCloser(t)
-		r.Body = rc
 
 		r.Method = "PUT"
 		var pushResp interface{}
-		ProxyOld(r, cfg.Push + "/save_token", &pushResp, nil)
+		if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp, nil); err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
 	}
 
 	return res, nil

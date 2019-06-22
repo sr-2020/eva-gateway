@@ -86,7 +86,7 @@ class AuthCest
     public function loginWithFirebaseTokenTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
-        self::$testCreds['firebase_token'] = 'testtoken';
+        self::$testCreds['firebase_token'] = 'testtoken7';
         $I->sendPOST(self::$route . '/login', self::$testCreds);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();

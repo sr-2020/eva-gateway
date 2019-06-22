@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"github.com/mitchellh/mapstructure"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -89,4 +91,42 @@ func Decode(out interface{}, in interface{}) {
 	}
 	dec1, _ := mapstructure.NewDecoder(&decConfig)
 	dec1.Decode(in)
+}
+
+func getBody(r *io.ReadCloser) ([]byte, error) {
+	body, err := ioutil.ReadAll(*r)
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	*r = ioutil.NopCloser(strings.NewReader(string(body)))
+
+	return body, nil
+}
+
+func getBodyToInterface(r *io.ReadCloser, data interface{}) error {
+	body, err := getBody(r)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	jsonErr := json.Unmarshal(body, &data)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+		return jsonErr
+	}
+
+	return nil
+}
+
+func setInterfaceToBody(data interface{}, body *io.ReadCloser) error {
+	bodyResp, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	*body = ioutil.NopCloser(strings.NewReader(string(bodyResp)))
+
+	return nil
 }

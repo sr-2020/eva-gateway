@@ -60,11 +60,11 @@ func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
 func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		p := ps.ByName("path")
-		url, err := url.Parse(path + p)
+		urlPath, err := url.Parse(path + p)
 		if err != nil {
 			log.Fatal(err)
 		}
-		r.URL = url
+		r.URL = urlPath
 
 		for _, middleware := range middlewares.Global {
 			if _, err := middleware(w, r, ps); err != nil {
