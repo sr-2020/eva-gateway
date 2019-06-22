@@ -19,7 +19,7 @@ func InitClient() {
 	}
 }
 
-func ProxyOld(request *http.Request, url string, data interface{}, error interface{}) error {
+func ProxyOld(request *http.Request, url string, data interface{}) error {
 	req, err := http.NewRequest(request.Method, url, request.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -32,24 +32,9 @@ func ProxyOld(request *http.Request, url string, data interface{}, error interfa
 		log.Fatal(getErr)
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
+	if err := getBodyToInterface(&res.Body, &data); err != nil {
+		log.Fatal(err)
 	}
-
-	var response interface{}
-
-	jsonErr := json.Unmarshal(body, &response)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
-
-	if 400 == res.StatusCode {
-		Decode(&error, response)
-		return nil
-	}
-
-	Decode(&data, response)
 
 	return nil
 }

@@ -77,7 +77,7 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 		r.Method = "PUT"
 		var pushResp interface{}
-		if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp, nil); err != nil {
+		if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp); err != nil {
 			log.Println(err)
 			return nil, err
 		}

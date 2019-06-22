@@ -51,8 +51,8 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var positionUsers []PositionUser
 	var authUsers []AuthUser
 
-	ProxyOld(r, cfg.Position + "/api/v1/users", &positionUsers, nil)
-	ProxyOld(r, cfg.Auth + "/api/v1/users", &authUsers, nil)
+	ProxyOld(r, cfg.Position + "/api/v1/users", &positionUsers)
+	ProxyOld(r, cfg.Auth + "/api/v1/users", &authUsers)
 
 	temp := Positions{}
 	for i, v := range authUsers {
@@ -77,7 +77,7 @@ func PostPositions(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	var position PositionUser
 
-	ProxyOld(r, cfg.Position + "/api/v1/positions", &position, nil)
+	ProxyOld(r, cfg.Position + "/api/v1/positions", &position)
 
 	response, err := json.Marshal(position)
 	if err != nil {
