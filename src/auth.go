@@ -52,7 +52,7 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	}
 
 	var resp interface{}
-	res, err := Proxy(r, &resp)
+	res, err := ProxyData(r, &resp)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err

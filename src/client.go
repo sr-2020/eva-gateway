@@ -54,31 +54,34 @@ func ProxyOld(request *http.Request, url string, data interface{}, error interfa
 	return nil
 }
 
-func Proxy(request *http.Request, data interface{}) (*http.Response, error) {
+func Proxy(request *http.Request) (*http.Response, error) {
 	req, err := http.NewRequest(request.Method, request.URL.String(), request.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	req.Header = request.Header
-	res, getErr := httpClient.Do(req)
-	if getErr != nil {
-		log.Fatal(getErr)
+	res, reqErr := httpClient.Do(req)
+	if reqErr != nil {
+		log.Println(reqErr)
+		return res, reqErr
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
+	return res, nil
+}
+
+func ProxyData(request *http.Request, data interface{}) (*http.Response, error) {
+	res, err := Proxy(request)
+	if err != nil {
+		log.Println(err)
+		return res, err
 	}
 
-	var response interface{}
-	jsonErr := json.Unmarshal(body, &response)
-	if jsonErr != nil {
-		Decode(&data, jsonErr.Error())
+	if err := getBodyToInterface(&res.Body, data); err != nil {
+		log.Println(err)
 		return res, nil
 	}
-
-	Decode(&data, response)
 
 	return res, nil
 }
@@ -108,13 +111,13 @@ func getBody(r *io.ReadCloser) ([]byte, error) {
 func getBodyToInterface(r *io.ReadCloser, data interface{}) error {
 	body, err := getBody(r)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 
 	jsonErr := json.Unmarshal(body, &data)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 		return jsonErr
 	}
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -84,19 +83,14 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Hand
 		res := response
 		var resp interface{}
 		if nil == res {
-			res, err = Proxy(r, &resp)
+			res, err = ProxyData(r, &resp)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			body, readErr := ioutil.ReadAll(res.Body)
-			if readErr != nil {
-				log.Fatal(readErr)
+			if err := getBodyToInterface(&res.Body, &resp); err != nil {
+				log.Println(err)
 			}
-			var data interface{}
-
-			json.Unmarshal(body, &data)
-			Decode(&resp, data)
 		}
 		w.WriteHeader(res.StatusCode)
 		respons, err := json.Marshal(resp)
