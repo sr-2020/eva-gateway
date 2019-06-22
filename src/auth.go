@@ -49,22 +49,19 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		return nil, nil
 	}
 
-	var resp interface{}
-	res, err := ProxyData(r, &resp)
+	var authToken AuthUserToken
+	res, err := ProxyData(r, &authToken)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	if err := setInterfaceToBody(resp, &res.Body); err != nil {
+	if err := setInterfaceToBody(authToken, &res.Body); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
 	if res.StatusCode == 200 {
-		var authToken AuthUserToken
-		Decode(&authToken, resp)
-
 		token := PushToken{
 			Id: authToken.Id,
 			Token: authLogin.FirebaseToken,

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/mitchellh/mapstructure"
 	"io"
 	"io/ioutil"
 	"log"
@@ -69,16 +68,6 @@ func ProxyData(request *http.Request, data interface{}) (*http.Response, error) 
 	}
 
 	return res, nil
-}
-
-func Decode(out interface{}, in interface{}) {
-	decConfig := mapstructure.DecoderConfig{
-		TagName: "json",
-		Result: &out,
-		WeaklyTypedInput:true,
-	}
-	dec1, _ := mapstructure.NewDecoder(&decConfig)
-	dec1.Decode(in)
 }
 
 func getBody(r *io.ReadCloser) ([]byte, error) {
