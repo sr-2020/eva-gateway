@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/julienschmidt/httprouter"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -43,7 +41,7 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 	var authLogin AuthLogin
 	if err := getBodyToInterface(&r.Body, &authLogin); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -54,12 +52,12 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	var resp interface{}
 	res, err := ProxyData(r, &resp)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
 	if err := setInterfaceToBody(resp, &res.Body); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -73,14 +71,14 @@ func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		}
 
 		if err := setInterfaceToBody(token, &r.Body); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			return nil, err
 		}
 
 		r.Method = "PUT"
 		var pushResp interface{}
 		if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp, nil); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			return nil, err
 		}
 	}
@@ -95,30 +93,18 @@ func Auth(request *http.Request) error {
 func AuthRequest(request *http.Request, url string, data interface{}) error {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 
 	req.Header.Set("Authorization", request.Header.Get("Authorization"))
 
-	res, getErr := httpClient.Do(req)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
-	var response interface{}
-	jsonErr := json.Unmarshal(body, &response)
-	if jsonErr != nil {
-		log.Print(jsonErr)
-		return jsonErr
-	}
-
 	var authUser AuthUser
-	Decode(&authUser, response)
+	_, err = ProxyData(req, &authUser)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
 

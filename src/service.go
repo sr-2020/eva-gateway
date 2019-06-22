@@ -81,23 +81,23 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Hand
 		}
 
 		res := response
-		var resp interface{}
+		var data interface{}
 		if nil == res {
-			res, err = ProxyData(r, &resp)
+			res, err = ProxyData(r, &data)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			if err := getBodyToInterface(&res.Body, &resp); err != nil {
+			if err := getBodyToInterface(&res.Body, &data); err != nil {
 				log.Println(err)
 			}
 		}
 		w.WriteHeader(res.StatusCode)
-		respons, err := json.Marshal(resp)
+		responseBody, err := json.Marshal(data)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Fprint(w, string(respons))
+		fmt.Fprint(w, string(responseBody))
 	}
 }
