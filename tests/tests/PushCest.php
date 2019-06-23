@@ -58,10 +58,8 @@ class PushCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([
-            'canonical_ids' => 'integer',
+            'token_used' => 'string',
             'failure' => 'integer',
-            'multicast_id' => 'integer',
-            'results' => 'array',
             'success' => 'integer',
         ]);
     }

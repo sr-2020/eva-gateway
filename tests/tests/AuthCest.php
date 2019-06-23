@@ -45,6 +45,7 @@ class AuthCest
 
         $jsonResponse = json_decode($I->grabResponse());
         self::$createdApiKey = $jsonResponse->api_key;
+        self::$createdId = $jsonResponse->id;
     }
 
     public function profileAfterRegisterTest(ApiTester $I)
@@ -86,7 +87,7 @@ class AuthCest
     public function loginWithFirebaseTokenTest(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
-        self::$testCreds['firebase_token'] = 'testtoken7';
+        self::$testCreds['firebase_token'] = 'testtoken' . rand(0, 10000000);
         $I->sendPOST(self::$route . '/login', self::$testCreds);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
@@ -97,6 +98,28 @@ class AuthCest
 
         $jsonResponse = json_decode($I->grabResponse());
         self::$createdApiKey = $jsonResponse->api_key;
+    }
+
+    public function pushNotificationAfterLoginWithFirebaseTokenTest(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
+        $I->sendPOST('/push/send_notification/' . self::$createdId, [
+            'title' => 'Hello',
+            'body' => 'World'
+        ]);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([
+            'token_used' => 'string',
+            'failure' => 'integer',
+            'success' => 'integer',
+        ]);
+        $I->seeResponseContainsJson([
+            'token_used' => self::$testCreds['firebase_token'],
+            'failure' => 1,
+            'success' => 0,
+        ]);
     }
 
     public function profileAfterLoginTest(ApiTester $I)
