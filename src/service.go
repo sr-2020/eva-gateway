@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 	"log"
 	"net/http"
 	"net/url"
@@ -43,9 +45,18 @@ func InitService() {
 	}
 }
 
+func wrapHandler(h http.Handler) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		context.Set(r, "params", ps)
+		h.ServeHTTP(w, r)
+	}
+}
+
 func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
+	commonHandlers := alice.New(context.ClearHandler, loggingHandler)
 	if service, ok := Services[serviceName]; ok {
-		handle := ServiceRegister(service.Host + service.Path, service.Middleware)
+		serviceHandler := ServiceRegister(service.Host + service.Path, service.Middleware)
+		handle := wrapHandler(commonHandlers.Then(serviceHandler))
 
 		router.GET(path, handle)
 		router.POST(path, handle)
@@ -56,27 +67,27 @@ func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
 	}
 }
 
-func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
+
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		ps := context.Get(r, "params").(httprouter.Params)
 		p := ps.ByName("path")
+
 		urlPath, err := url.Parse(path + p)
 		if err != nil {
 			log.Fatal(err)
 		}
 		r.URL = urlPath
 
-		for _, middleware := range middlewares.Global {
-			if _, err := middleware(w, r, ps); err != nil {
-				log.Fatal(err)
-			}
+		middlewaresList := middlewares.Global
+		if routeMiddlewares, ok := middlewares.Route[p]; ok {
+			middlewaresList = append(middlewaresList, routeMiddlewares...)
 		}
 
 		var response *http.Response
-		if routeMiddlewares, ok := middlewares.Route[p]; ok {
-			for _, middleware := range routeMiddlewares {
-				if response, err = middleware(w, r, ps); err != nil {
-					log.Fatal(err)
-				}
+		for _, middleware := range middlewaresList {
+			if response, err = middleware(w, r, ps); err != nil {
+				log.Fatal(err)
 			}
 		}
 
@@ -100,4 +111,6 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) httprouter.Hand
 
 		fmt.Fprint(w, string(responseBody))
 	}
+
+	return http.HandlerFunc(fn)
 }
