@@ -45,18 +45,9 @@ func InitService() {
 	}
 }
 
-func wrapHandler(h http.Handler) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		context.Set(r, "params", ps)
-		h.ServeHTTP(w, r)
-	}
-}
-
 func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
-	//commonHandlers := alice.New(context.ClearHandler, loggingHandler)
 	if service, ok := Services[serviceName]; ok {
 		handle := wrapHandler(ServiceRegister(service.Host + service.Path, service.Middleware))
-		//handle := wrapHandler(commonHandlers.Then(serviceHandler))
 
 		router.GET(path, handle)
 		router.POST(path, handle)
@@ -65,22 +56,6 @@ func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
 	} else {
 		log.Fatal(errors.New("Unknown service " + serviceName))
 	}
-}
-
-func proxyHandler(w http.ResponseWriter, r *http.Request) {
-	var data interface{}
-	res, err := ProxyData(r, &data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.WriteHeader(res.StatusCode)
-	responseBody, err := json.Marshal(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Fprint(w, string(responseBody))
 }
 
 func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
@@ -100,12 +75,32 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
 			middlewaresList = append(middlewaresList, routeMiddlewares...)
 		}
 
-		chain := alice.New(aHandler, bHandler)
-		//chain.Append(middlewaresList...)
-		//handler := chain.ThenFunc(proxyHandler)
-		handler := chain.Append(middlewaresList...).ThenFunc(proxyHandler)
+		handler := alice.New(middlewaresList...).ThenFunc(proxyHandler)
 		handler.ServeHTTP(w, r)
 	}
 
 	return http.HandlerFunc(fn)
+}
+
+func wrapHandler(h http.Handler) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		context.Set(r, "params", ps)
+		h.ServeHTTP(w, r)
+	}
+}
+
+func proxyHandler(w http.ResponseWriter, r *http.Request) {
+	var data interface{}
+	res, err := ProxyData(r, &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.WriteHeader(res.StatusCode)
+	responseBody, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, string(responseBody))
 }

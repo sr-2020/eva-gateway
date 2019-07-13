@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,11 +33,7 @@ type  PushToken struct {
 	Token     string  `json:"token"`
 }
 
-//func NewAuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-//	Auth(r)
-//}
-
-func NewAuthMiddleware(next http.Handler) http.Handler {
+func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		Auth(r)
 		next.ServeHTTP(w, r)
@@ -45,12 +42,7 @@ func NewAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
-	Auth(r)
-	return nil, nil
-}
-
-func NewLoginMiddleware(next http.Handler) http.Handler {
+func LoginMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var authLogin AuthLogin
 		if err := getBodyToInterface(&r.Body, &authLogin); err != nil {
@@ -80,63 +72,29 @@ func NewLoginMiddleware(next http.Handler) http.Handler {
 				log.Println(err)
 			}
 
-			r.Method = "PUT"
+			req, err := http.NewRequest(http.MethodPut, "", nil)
+			if err != nil {
+				log.Println(err)
+			}
+
+			req.Header = r.Header
+			req.Body = r.Body
 			var pushResp interface{}
-			if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp); err != nil {
+			if err := ProxyOld(req, cfg.Push + "/save_token", &pushResp); err != nil {
 				log.Println(err)
 			}
 		}
 
-		next.ServeHTTP(w, r)
+		w.WriteHeader(res.StatusCode)
+		responseBody, err := json.Marshal(authToken)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Fprint(w, string(responseBody))
 	}
 
 	return http.HandlerFunc(fn)
-}
-
-func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
-
-	var authLogin AuthLogin
-	if err := getBodyToInterface(&r.Body, &authLogin); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	if authLogin.FirebaseToken == "" {
-		return nil, nil
-	}
-
-	var authToken AuthUserToken
-	res, err := ProxyData(r, &authToken)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	if err := setInterfaceToBody(authToken, &res.Body); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	if res.StatusCode == 200 {
-		token := PushToken{
-			Id: authToken.Id,
-			Token: authLogin.FirebaseToken,
-		}
-
-		if err := setInterfaceToBody(token, &r.Body); err != nil {
-			log.Println(err)
-			return nil, err
-		}
-
-		r.Method = "PUT"
-		var pushResp interface{}
-		if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp); err != nil {
-			log.Println(err)
-			return nil, err
-		}
-	}
-
-	return res, nil
 }
 
 func Auth(request *http.Request) error {

@@ -1,13 +1,10 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	"net/http"
 )
 
-type Middleware func(http.ResponseWriter, *http.Request, httprouter.Params) (*http.Response, error)
-type NewMiddleware func(http.ResponseWriter, *http.Request, httprouter.Params)
+type Middleware = alice.Constructor
 
 type Middlewares struct {
 	Billing ServiceMiddleware
@@ -17,44 +14,44 @@ type Middlewares struct {
 }
 
 type ServiceMiddleware struct {
-	Global []alice.Constructor
-	Route map[string][]alice.Constructor
+	Global []Middleware
+	Route map[string][]Middleware
 }
 
 var MiddlewareMap = Middlewares{
 	Auth: ServiceMiddleware{
 		Global: nil,
-		Route: map[string][]alice.Constructor{
+		Route: map[string][]Middleware{
 			"/profile": {
-				NewAuthMiddleware,
+				AuthMiddleware,
 			},
 			"/login": {
-				NewLoginMiddleware,
+				LoginMiddleware,
 			},
 		},
 	},
 	Billing: ServiceMiddleware{
-		Global: []alice.Constructor{
-			NewAuthMiddleware,
+		Global: []Middleware{
+			AuthMiddleware,
 		},
-		Route: map[string][]alice.Constructor{
+		Route: map[string][]Middleware{
 			"/account_info": {
-				NewAccountInfoMiddleware,
+				AccountInfoMiddleware,
 			},
 			"/transfer": {
-				NewTransferMiddleware,
+				TransferMiddleware,
 			},
 		},
 	},
 	Position: ServiceMiddleware{
-		Global: []alice.Constructor{
-			NewAuthMiddleware,
+		Global: []Middleware{
+			AuthMiddleware,
 		},
 		Route: nil,
 	},
 	Push: ServiceMiddleware{
-		Global: []alice.Constructor{
-			NewAuthMiddleware,
+		Global: []Middleware{
+			AuthMiddleware,
 		},
 		Route: nil,
 	},

@@ -18,7 +18,7 @@ type Transfer struct {
 	CreatedAt          string `json:"created_at"`
 }
 
-func NewAccountInfoMiddleware(next http.Handler) http.Handler {
+func AccountInfoMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ps := context.Get(r, "params").(httprouter.Params)
 		sin := r.Header.Get("X-User-Id")
@@ -29,7 +29,7 @@ func NewAccountInfoMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func NewTransferMiddleware(next http.Handler) http.Handler {
+func TransferMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var transfer Transfer
 		if err := getBodyToInterface(&r.Body, &transfer); err != nil {
@@ -49,32 +49,4 @@ func NewTransferMiddleware(next http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(fn)
-}
-
-func AccountInfoMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
-	sin := r.Header.Get("X-User-Id")
-	r.URL.Path = ps.ByName("path") + "/" + sin
-	return nil, nil
-}
-
-func TransferMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
-	var transfer Transfer
-	if err := getBodyToInterface(&r.Body, &transfer); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	sin, err := strconv.Atoi(r.Header.Get("X-User-Id"))
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	transfer.From = sin
-
-	if err := setInterfaceToBody(transfer, &r.Body); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return nil, nil
 }
