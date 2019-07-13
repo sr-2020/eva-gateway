@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 	"log"
 	"net/http"
 	"strconv"
@@ -20,8 +21,37 @@ func loggingHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome!")
+func aHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("A[")
+		next.ServeHTTP(w, r)
+		fmt.Println("]")
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func bHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("B[")
+		next.ServeHTTP(w, r)
+		fmt.Println("]")
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func checkHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CHECK")
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	fmt.Fprintf(w, "Welcome2!")
+	fmt.Println("C")
+
+	chain := alice.New(aHandler, bHandler)
+	handler := chain.ThenFunc(checkHandler)
+	handler.ServeHTTP(w, r)
 }
 
 func main() {
@@ -29,7 +59,12 @@ func main() {
 	InitClient()
 	InitService()
 
+	//chain := New(aHandler, bHandler)
+	//handler := chain.ThenFunc(indexHandler)
+	//handler.ServeHTTP()
+
 	router := httprouter.New()
+	router.GET("/", indexHandler)
 
 	router.GET("/api/v1/users", GetUsers)
 	router.POST("/api/v1/positions", PostPositions)

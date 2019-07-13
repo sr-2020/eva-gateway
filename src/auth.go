@@ -32,9 +32,65 @@ type  PushToken struct {
 	Token     string  `json:"token"`
 }
 
+//func NewAuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+//	Auth(r)
+//}
+
+func NewAuthMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		Auth(r)
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
 func AuthMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {
 	Auth(r)
 	return nil, nil
+}
+
+func NewLoginMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		var authLogin AuthLogin
+		if err := getBodyToInterface(&r.Body, &authLogin); err != nil {
+			log.Println(err)
+		}
+
+		if authLogin.FirebaseToken == "" {
+		}
+
+		var authToken AuthUserToken
+		res, err := ProxyData(r, &authToken)
+		if err != nil {
+			log.Println(err)
+		}
+
+		if err := setInterfaceToBody(authToken, &res.Body); err != nil {
+			log.Println(err)
+		}
+
+		if res.StatusCode == 200 {
+			token := PushToken{
+				Id: authToken.Id,
+				Token: authLogin.FirebaseToken,
+			}
+
+			if err := setInterfaceToBody(token, &r.Body); err != nil {
+				log.Println(err)
+			}
+
+			r.Method = "PUT"
+			var pushResp interface{}
+			if err := ProxyOld(r, cfg.Push + "/save_token", &pushResp); err != nil {
+				log.Println(err)
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
 }
 
 func LoginMiddleware(w http.ResponseWriter, r *http.Request, ps httprouter.Params) (*http.Response, error) {

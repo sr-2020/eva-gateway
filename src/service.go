@@ -53,10 +53,10 @@ func wrapHandler(h http.Handler) httprouter.Handle {
 }
 
 func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
-	commonHandlers := alice.New(context.ClearHandler, loggingHandler)
+	//commonHandlers := alice.New(context.ClearHandler, loggingHandler)
 	if service, ok := Services[serviceName]; ok {
-		serviceHandler := ServiceRegister(service.Host + service.Path, service.Middleware)
-		handle := wrapHandler(commonHandlers.Then(serviceHandler))
+		handle := wrapHandler(ServiceRegister(service.Host + service.Path, service.Middleware))
+		//handle := wrapHandler(commonHandlers.Then(serviceHandler))
 
 		router.GET(path, handle)
 		router.POST(path, handle)
@@ -65,6 +65,22 @@ func ServiceRouter(router *httprouter.Router, path string, serviceName string) {
 	} else {
 		log.Fatal(errors.New("Unknown service " + serviceName))
 	}
+}
+
+func proxyHandler(w http.ResponseWriter, r *http.Request) {
+	var data interface{}
+	res, err := ProxyData(r, &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.WriteHeader(res.StatusCode)
+	responseBody, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprint(w, string(responseBody))
 }
 
 func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
@@ -84,32 +100,11 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
 			middlewaresList = append(middlewaresList, routeMiddlewares...)
 		}
 
-		var response *http.Response
-		for _, middleware := range middlewaresList {
-			if response, err = middleware(w, r, ps); err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		res := response
-		var data interface{}
-		if nil == res {
-			res, err = ProxyData(r, &data)
-			if err != nil {
-				log.Fatal(err)
-			}
-		} else {
-			if err := getBodyToInterface(&res.Body, &data); err != nil {
-				log.Println(err)
-			}
-		}
-		w.WriteHeader(res.StatusCode)
-		responseBody, err := json.Marshal(data)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Fprint(w, string(responseBody))
+		chain := alice.New(aHandler, bHandler)
+		//chain.Append(middlewaresList...)
+		//handler := chain.ThenFunc(proxyHandler)
+		handler := chain.Append(middlewaresList...).ThenFunc(proxyHandler)
+		handler.ServeHTTP(w, r)
 	}
 
 	return http.HandlerFunc(fn)
