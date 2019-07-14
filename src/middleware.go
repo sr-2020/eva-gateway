@@ -7,15 +7,17 @@ import (
 type Middleware = alice.Constructor
 
 type Middlewares struct {
-	Billing ServiceMiddleware
-	Auth ServiceMiddleware
-	Position ServiceMiddleware
-	Push ServiceMiddleware
+	Billing       ServiceMiddleware
+	Auth          ServiceMiddleware
+	Position      ServiceMiddleware
+	Push          ServiceMiddleware
+	ModelEngine   ServiceMiddleware
+	ModelsManager ServiceMiddleware
 }
 
 type ServiceMiddleware struct {
 	Global []Middleware
-	Route map[string][]Middleware
+	Route  map[string][]Middleware
 }
 
 var MiddlewareMap = Middlewares{
@@ -50,6 +52,18 @@ var MiddlewareMap = Middlewares{
 		Route: nil,
 	},
 	Push: ServiceMiddleware{
+		Global: []Middleware{
+			AuthMiddleware,
+		},
+		Route: nil,
+	},
+	ModelEngine: ServiceMiddleware{
+		Global: []Middleware{
+			AuthMiddleware,
+		},
+		Route: nil,
+	},
+	ModelsManager: ServiceMiddleware{
 		Global: []Middleware{
 			AuthMiddleware,
 		},

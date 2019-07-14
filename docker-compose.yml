@@ -11,11 +11,15 @@ services:
       POSITION_HOST: http://position-app
       BILLING_HOST: http://billing-app:3000
       PUSH_HOST: http://push-app:3000
+      MODEL_ENGINE_HOST: http://model-engine-app:3000
+      MODELS_MANAGER_HOST: http://models-manager-app:3000
     restart: on-failure
     links:
       - auth-app
       - position-app
       - billing-app
+      - model-engine-app
+      - models-manager-app
 
   auth-app:
     image: ${AUTH_IMAGE_APP}
@@ -65,6 +69,23 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       FIREBASE_SERVER_TOKEN: ${PUSH_FIREBASE_SERVER_TOKEN}
+    links:
+      - database
+
+  model-engine-app:
+    image: ${MODEL_ENGINE_IMAGE_APP}
+    ports:
+      - ${MODEL_ENGINE_APP_PORT}:3000
+
+  models-manager-app:
+    image: ${MODELS_MANAGER_IMAGE_APP}
+    ports:
+      - ${MODELS_MANAGER_APP_PORT}:3000
+    environment:
+      MYSQL_HOST: database
+      MYSQL_DATABASE: models
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     links:
       - database
 

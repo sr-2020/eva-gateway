@@ -42,6 +42,16 @@ func InitService() {
 			Path: "",
 			Middleware: MiddlewareMap.Push,
 		},
+		"model-engine": {
+			Host: cfg.ModelEngine,
+			Path: "",
+			Middleware: MiddlewareMap.ModelEngine,
+		},
+		"models-manager": {
+			Host: cfg.ModelsManager,
+			Path: "",
+			Middleware: MiddlewareMap.ModelsManager,
+		},
 	}
 }
 

@@ -7,11 +7,13 @@ import (
 )
 
 type Config struct {
-	Port     int
-	Auth     string
-	Position string
-	Billing  string
-	Push  string
+	Port          int
+	Auth          string
+	Position      string
+	Billing       string
+	Push          string
+	ModelEngine   string
+	ModelsManager string
 }
 
 var cfg Config
@@ -25,5 +27,7 @@ func InitConfig() {
 		cfg.Position = os.Getenv("POSITION_HOST")
 		cfg.Billing = os.Getenv("BILLING_HOST")
 		cfg.Push = os.Getenv("PUSH_HOST")
+		cfg.ModelEngine = os.Getenv("MODEL_ENGINE_HOST")
+		cfg.ModelsManager = os.Getenv("MODELS_MANAGER_HOST")
 	}
 }
