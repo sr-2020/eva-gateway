@@ -9,7 +9,6 @@ import (
 )
 
 type Transfer struct {
-	Id                 int    `json:"id"`
 	From               int    `json:"sin_from"`
 	To                 int    `json:"sin_to"`
 	Amount             int    `json:"amount"`
