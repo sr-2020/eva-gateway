@@ -67,6 +67,10 @@ var MiddlewareMap = Middlewares{
 		Global: []Middleware{
 			AuthMiddleware,
 		},
-		Route: nil,
+		Route: map[string][]Middleware{
+			"/character/model": {
+				CharacterModelMiddleware,
+			},
+		},
 	},
 }
