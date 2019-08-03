@@ -9,6 +9,15 @@ suites:
             url: http://localhost:7000/api/v1
             depends: PhpBrowser
 
+    dev:
+      actor: ApiTester
+      path: .
+      modules:
+        enabled:
+          - REST:
+              url: http://localhost:7070/api/v1
+              depends: PhpBrowser
+
     production:
         actor: ApiTester
         path: .

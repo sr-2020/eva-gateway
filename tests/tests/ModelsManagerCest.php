@@ -21,4 +21,12 @@ class ModelsManagerCest
         ]);
     }
 
+    public function characterModelNotFoundTest(ApiTester $I)
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
+        $I->sendGET(self::$route . '/character/model');
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::NOT_FOUND);
+        $I->seeResponseContains("Character model with id = 1 not found");
+    }
 }
