@@ -100,8 +100,9 @@ class AuthCest
         self::$createdApiKey = $jsonResponse->api_key;
     }
 
-    public function pushNotificationAfterLoginWithFirebaseTokenTest(ApiTester $I)
+    public function pushNotificationAfterLoginWithFirebaseTokenTest(ApiTester $I, $scenario)
     {
+        $scenario->skip("Work in progress");
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
         $I->sendPOST('/push/send_notification/' . self::$createdId, [

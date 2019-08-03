@@ -32,7 +32,6 @@ class BillingCest
     {
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST(self::$route . '/transactions', [
-            'id' => 0,
             'created_at' => '2019-06-04T06:21:20.456Z',
             'sin_from' => 0,
             'sin_to' => 1,
@@ -43,7 +42,6 @@ class BillingCest
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([
-            'id' => 'integer',
             'created_at' => 'string',
             'sin_from' => 'integer',
             'sin_to' => 'integer',

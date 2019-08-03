@@ -83,7 +83,7 @@ services:
       - ${MODELS_MANAGER_APP_PORT}:3000
     environment:
       MYSQL_HOST: database
-      MYSQL_DATABASE: models
+      MYSQL_DATABASE: model
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     links:
