@@ -101,5 +101,26 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
+  postgres:
+    image: ${IMAGE_POSTGRES}
+    restart: always
+    volumes:
+      - eva-platform-postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+
+  ppa:
+    image: ${IMAGE_PPA}
+    restart: always
+    ports:
+      - 7051:80
+    environment:
+      PHP_PG_ADMIN_SERVER_HOST: postgres
+
 volumes:
   eva-platform-database:
+  eva-platform-postgres:
