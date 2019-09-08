@@ -54,13 +54,19 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ProxyOld(r, cfg.Position + "/api/v1/users", &positionUsers)
 	ProxyOld(r, cfg.Auth + "/api/v1/users", &authUsers)
 
+	var positionMap = make(map[int]PositionUser, 0)
+	for _, v := range positionUsers {
+		positionMap[v.Id] = v
+	}
+
 	temp := Positions{}
-	for i, v := range authUsers {
-		if len(positionUsers) > i {
-			temp.join(v, positionUsers[i])
+	for _, v := range authUsers {
+		if val, ok := positionMap[v.Id]; ok {
+			temp.join(v, val)
 		} else {
 			temp.join(v, PositionUser{})
 		}
+
 		resp = append(resp, temp)
 	}
 
