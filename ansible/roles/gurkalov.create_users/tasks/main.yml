@@ -1,0 +1,59 @@
+---
+# tasks file for create-users
+- name: Create groups
+  group:
+    name: "{{ item.groups }}"
+    state: present
+  when: item.groups is defined
+  with_items:
+    - "{{ users }}"
+  loop_control:
+    label: "name: {{ item.name }}"
+  tags:
+    - group
+
+- name: Create users
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password | d(user.password) }}"
+    update_password: "{{ item.update_password | d(user.update_password) }}"
+    groups: "{{ item.groups | d(user.groups) }}"
+    shell: "{{ item.shell | d(user.shell) }}"
+    expires: "{{ item.expires | d(user.expires) }}"
+    createhome: "{{ item.createhome | d(user.createhome) }}"
+    state: "{{ item.state | d(user.state) }}"
+    remove: "{{ item.remove | d(user.remove) }}"
+  with_items:
+    - "{{ users }}"
+  loop_control:
+    label: "name: {{ item.name }} state: {{ item.state | d(user.state) }}"
+  tags:
+    - user
+
+- name: Add SSH Keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    exclusive: "{{ item.exclusive_ssh_key | d(user.exclusive_ssh_key) }}"
+    state: present
+  when: item.ssh_key is defined
+  with_items:
+    - "{{ users }}"
+  loop_control:
+    label: "name: {{ item.name }}"
+  tags:
+    - ssh
+
+- name: Set sudo access for users
+  lineinfile:
+    dest: /etc/sudoers
+    state: "{{ 'present' if ( item.sudo | d(user.sudo) ) else 'absent' }}"
+    regexp: '^{{ item.name }} '
+    line: "{{ item.name }} ALL=(ALL) {{ 'NOPASSWD:' if ( item.sudo_nopasswd | d(user.sudo_nopasswd) )  else '' }}ALL"
+    validate: 'visudo -cf %s'
+  with_items:
+    - "{{ users }}"
+  loop_control:
+    label: "name: {{ item.name }}"
+  tags:
+    - sudo

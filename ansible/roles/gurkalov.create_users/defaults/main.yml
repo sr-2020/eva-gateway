@@ -1,0 +1,19 @@
+---
+# defaults file for create-users
+
+user:
+  name: default
+  sudo: true
+  sudo_nopasswd: false
+  password: ''
+  update_password: always
+  groups: []
+  shell: /bin/bash
+  exclusive_ssh_key: true
+  createhome: true
+  expires: -1
+  state: present
+  remove: false
+
+users:
+  - name: user

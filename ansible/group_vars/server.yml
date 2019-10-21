@@ -1,0 +1,22 @@
+---
+users:
+  - name: deploy
+    sudo: true
+    groups: ['docker']
+    password: "{{ vault_deploy_password }}"
+    ssh_key: "{{ vault_deploy_keys }}"
+
+  - name: aeremin
+    sudo: true
+    sudo_nopasswd: true
+    ssh_key: "{{ vault_aeremin_keys }}"
+
+  - name: sluchaj
+    sudo: true
+    sudo_nopasswd: true
+    ssh_key: "{{ vault_sluchaj_keys }}"
+
+services:
+  - name: platform
+    deploy: |
+      docker-compose up -d

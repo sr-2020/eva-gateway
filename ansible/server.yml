@@ -1,0 +1,21 @@
+---
+- name: Setup server
+  hosts: server
+
+  roles:
+    - {role: geerlingguy.docker, tags: docker, become: true}
+    - {role: gurkalov.create_users, tags: users, become: true}
+
+  tasks:
+    - name: Allow ssh connect by password
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+      become: true
+
+    - name: Restart service ssh
+      service:
+        name: ssh
+        state: restarted
+      become: true

@@ -1,0 +1,29 @@
+---
+galaxy_info:
+  role_name: create-users
+  author: Gurkalov Dmitry
+  description: Create and manage users with sudo and ssh.
+  company: Gurkalov
+  license: MIT
+  min_ansible_version: 2.2
+  issue_tracker_url: https://github.com/gurkalov/ansible-create-users/issues
+
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+
+  galaxy_tags:
+    - user
+    - users
+    - sudoers
+    - sudo
+    - ssh
+
+dependencies: []

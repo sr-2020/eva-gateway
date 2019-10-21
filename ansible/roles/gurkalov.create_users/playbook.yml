@@ -1,0 +1,5 @@
+---
+- name: Install Yandex Cloud autostarter on all hosts.
+  hosts: all
+  roles:
+    - {role: gurkalov.users}

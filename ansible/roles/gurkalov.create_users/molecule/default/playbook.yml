@@ -1,0 +1,8 @@
+---
+- name: Create users on all hosts.
+  hosts: all
+  roles:
+    - role: ansible-create-users
+
+  vars_files:
+    - ./playbook-vars.yml

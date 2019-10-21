@@ -1,0 +1,64 @@
+---
+- name: Deploy service
+  hosts: server
+
+  tasks:
+    - name: Create services directory
+      file:
+        path: /var/services/platform
+        state: directory
+        mode: 0755
+      become: true
+      tags:
+        - setup
+
+    - name: Copy docker-compose
+      copy:
+        src: ../docker-compose.yml
+        dest: /var/services/platform
+        owner: deploy
+        group: deploy
+        mode: '0644'
+      become: true
+      tags:
+        - setup
+
+    - name: Copy env variables
+      copy:
+        src: services/platform/secrets
+        dest: /var/services/platform/.env
+        owner: deploy
+        group: deploy
+        mode: '0644'
+      become: true
+      tags:
+        - setup
+
+    - name: Create services
+      template:
+        src: service.j2
+        dest: "/etc/systemd/system/docker-compose-{{ item.name }}.service"
+      with_items: "{{ services }}"
+      become: true
+      tags:
+        - setup
+        - systemd
+
+#    - name: Restart service
+#      systemd:
+#        state: restarted
+#        name: "docker-compose-{{ item.name }}"
+#        enabled: true
+#      with_items: "{{ services }}"
+#      become: true
+#      tags:
+#        - setup
+#        - systemd
+
+#    - name: Deploy services
+#      shell: "{{ item.deploy }}"
+#      args:
+#        chdir: "/var/services/{{ item.name }}"
+#      with_items: "{{ services }}"
+#      tags:
+#        - deploy
