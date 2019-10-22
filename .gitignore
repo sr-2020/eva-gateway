@@ -1,6 +1,7 @@
 tests/loadtest/.token
 tests/loadtest/logs/
 tests/tests/_output/*
+tests/tests/_support/_generated/*
 src/.env
 src/go_build_gateway
 .env

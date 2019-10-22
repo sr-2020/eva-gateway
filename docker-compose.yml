@@ -30,10 +30,12 @@ services:
     environment:
       SKIP_COMPOSER: 1
       SKIP_CHOWN: 1
-      DB_HOST: database
-      DB_DATABASE: eva-position
-      DB_USERNAME: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: position
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
     links:
       - database
 
