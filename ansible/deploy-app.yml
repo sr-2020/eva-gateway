@@ -1,0 +1,20 @@
+---
+- name: Deploy service
+  hosts: server
+
+  tasks:
+    - name: Copy docker-compose
+      copy:
+        src: ../docker-compose.yml
+        dest: /var/services/platform
+
+    - name: Copy env variables
+      copy:
+        src: services/platform/secrets
+        dest: /var/services/platform/.env
+
+    - name: Deploy services
+      shell: "{{ item.deploy }}"
+      args:
+        chdir: "/var/services/{{ item.name }}"
+      with_items: "{{ services }}"

@@ -22,6 +22,9 @@ deploy:
 	docker-compose up -d --no-deps gateway-app" ;\
 	}
 
+deploy-app:
+	cd ansible && ansible-playbook -i inventories/production -u deploy deploy-app.yml --extra-vars ansible_ssh_pass=$(password)
+
 deploy-local:
 	docker-compose rm -fs app
 	docker-compose up --no-deps app
