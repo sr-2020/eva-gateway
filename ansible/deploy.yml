@@ -44,21 +44,23 @@
         - setup
         - systemd
 
-#    - name: Restart service
-#      systemd:
-#        state: restarted
-#        name: "docker-compose-{{ item.name }}"
-#        enabled: true
-#      with_items: "{{ services }}"
-#      become: true
-#      tags:
-#        - setup
-#        - systemd
+    - name: Restart service
+      systemd:
+        state: restarted
+        name: "docker-compose-{{ item.name }}"
+        enabled: true
+      with_items: "{{ services }}"
+      become: true
+      tags:
+        - setup
+        - systemd
 
-#    - name: Deploy services
-#      shell: "{{ item.deploy }}"
-#      args:
-#        chdir: "/var/services/{{ item.name }}"
-#      with_items: "{{ services }}"
-#      tags:
-#        - deploy
+    - name: Start service
+      systemd:
+        state: started
+        name: "docker-compose-{{ item.name }}"
+        enabled: true
+      with_items: "{{ services }}"
+      become: true
+      tags:
+        - deploy
