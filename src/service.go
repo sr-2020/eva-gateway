@@ -74,7 +74,7 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
 		ps := context.Get(r, "params").(httprouter.Params)
 		p := ps.ByName("path")
 
-		urlPath, err := url.Parse(path + p)
+		urlPath, err := url.Parse(path + p + "?" + r.URL.RawQuery)
 		if err != nil {
 			log.Fatal(err)
 		}
