@@ -10,6 +10,7 @@
 	- [Список пользователей со статусами](#usersList)
 - [Позиционирование](#position)
 	- [Отправка уровня слышимости маячков](#sendbeacons)
+	- [Список событий](#positions)
 
 ## <a name="setup"></a> Установка
 Для локальной установки и тестирования нужно выполнить:
@@ -196,4 +197,15 @@ curl -X GET "http://gateway.evarun.ru/api/v1/users"
 Пример:
 ```
 curl -X POST "http://gateway.evarun.ru/api/v1/position/positions" -H "Authorization: Bearer MmVDDllSdUpKa0h5MFBDdjN1QnlVbEVC" -H "Content-Type: application/json" -d "{\"beacons\":[{\"ssid\":\"beacon1\",\"bssid\":\"b0:0a:95:9d:00:0a\",\"level\":-50}]}"
+```
+
+#### <a name="positions"></a> Список событий
+Получение списка событий осуществляется через GET запрос на http://gateway.evarun.ru/api/v1/position/positions
+
+Можно использовать сортировку по полю, указать список необходимых полей для вывода и выставить фильтр, например, по конкретному пользователю.
+Так же можно указать параметры `limit` и `offset`.
+
+Пример:
+```
+http://gateway.evarun.ru/api/v1/position/positions?sort=-id&select=user_id,beacons&filter[user_id]=1&limit=10&offset=100
 ```
