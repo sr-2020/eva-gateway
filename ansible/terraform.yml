@@ -1,0 +1,29 @@
+---
+- name: Deploy service
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Terraform init
+      command: terraform init
+      args:
+        chdir: ../terraform/
+
+    - name: Terraform apply
+      command: terraform apply -auto-approve
+      args:
+        chdir: ../terraform/
+
+    - name: Get new IP
+      command: terraform output external_ip_address_vm_1
+      register: external_ip_address
+      args:
+        chdir: ../terraform/
+
+    - name: Change inventory
+      lineinfile:
+        path: inventories/stage/hosts
+        regexp: '#server_ip'
+        line: "{{external_ip_address.stdout}} #server_ip"
+
+    - debug: var=external_ip_address.stdout

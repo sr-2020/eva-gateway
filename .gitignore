@@ -9,3 +9,7 @@ src/go_build_gateway
 *.env
 */*.env
 docker-compose.override.yml
+*/*.token
+*/*.terraform
+*.tfstate.backup
+*.tfstate

@@ -37,3 +37,11 @@ reboot:
 	make down
 	make server
 	make setup
+
+stage:
+	ansible-playbook terraform.yml -i inventories/stage
+	make setup user=$(USER) env=$(INVENTORY)
+	make deploy user=$(USER) env=$(INVENTORY)
+	sleep 300
+	make deploy user=$(USER) env=$(INVENTORY)
+	cd ../ && make test env=$(INVENTORY)
