@@ -177,7 +177,7 @@ services:
     image: ${IMAGE_CRON}
     restart: always
     environment:
-      CRON_STRINGS: "0 * * * * wget --post-data '' http://backup/v1/backup"
+      CRON_STRINGS: "0 0 * * * wget --post-data '' http://backup/v1/backup"
     links:
       - backup
 
