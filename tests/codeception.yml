@@ -18,6 +18,15 @@ suites:
               url: http://localhost:7070/api/v1
               depends: PhpBrowser
 
+    stage:
+      actor: ApiTester
+      path: .
+      modules:
+        enabled:
+          - REST:
+              url: http://84.201.132.246:7000/api/v1
+              depends: PhpBrowser
+
     production:
         actor: ApiTester
         path: .
