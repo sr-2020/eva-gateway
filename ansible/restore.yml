@@ -1,0 +1,11 @@
+---
+- name: Deploy service
+  hosts: server
+
+  tasks:
+    - name: Restore
+      shell: "docker exec -it platform_cron_1 wget --post-data '' http://backup/v1/restore/last"
+      args:
+        chdir: "/var/services/platform"
+      become: yes
+      become_user: deploy

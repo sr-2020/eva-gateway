@@ -1,5 +1,5 @@
 [server]
-84.201.172.129 #server_ip
+84.201.134.11 #server_ip
 
 [localhost]
 127.0.0.1 ansible_connection=local

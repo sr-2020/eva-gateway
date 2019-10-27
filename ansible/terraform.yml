@@ -26,4 +26,16 @@
         regexp: '#server_ip'
         line: "{{external_ip_address.stdout}} #server_ip"
 
+    - name: Change stage for test
+      lineinfile:
+        path: ../tests/codeception.yml
+        regexp: '#stage_ip'
+        line: "              url: http://{{external_ip_address.stdout}}:7000/api/v1 #stage_ip"
+
+    - name: Reset host
+      command: "ssh-keygen -f ~/.ssh/known_hosts -R {{external_ip_address.stdout}}"
+
+    - name: Add host
+      command: "ssh-keyscan -H {{external_ip_address.stdout}} >> ~/.ssh/known_hosts"
+
     - debug: var=external_ip_address.stdout

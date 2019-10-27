@@ -24,7 +24,7 @@ suites:
       modules:
         enabled:
           - REST:
-              url: http://84.201.172.129:7000/api/v1
+              url: http://84.201.134.11:7000/api/v1 #stage_ip
               depends: PhpBrowser
 
     production:

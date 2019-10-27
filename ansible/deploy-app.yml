@@ -18,3 +18,5 @@
       args:
         chdir: "/var/services/{{ item.name }}"
       with_items: "{{ services }}"
+      become: yes
+      become_user: deploy

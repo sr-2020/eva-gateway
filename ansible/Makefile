@@ -39,9 +39,14 @@ reboot:
 	make setup
 
 stage:
-	ansible-playbook terraform.yml -i inventories/stage
-	make setup user=$(USER) env=$(INVENTORY)
-	make deploy user=$(USER) env=$(INVENTORY)
-	sleep 300
-	make deploy user=$(USER) env=$(INVENTORY)
-	cd ../ && make test env=$(INVENTORY)
+	ansible-playbook terraform.yml -i $(INVENTORY)
+	sleep 120
+	make setup user=$(USER) env=$(ENV)
+	make deploy user=$(USER) env=$(ENV)
+	sleep 500
+	ansible-playbook -i $(INVENTORY) -u $(USER) restore.yml
+	sleep 60
+	ansible-playbook -i $(INVENTORY) -u $(USER) deploy-app.yml
+	sleep 60
+	cd ../ && make test env=$(ENV)
+	cd ../terraform && terraform destroy -auto-approve
