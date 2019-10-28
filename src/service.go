@@ -77,6 +77,7 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
 		urlPath, err := url.Parse(path + p + "?" + r.URL.RawQuery)
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 		r.URL = urlPath
 
@@ -103,13 +104,15 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	var data interface{}
 	res, err := ProxyData(r, &data)
 	if err != nil {
-		log.Fatal(err)
+		ErrorResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	w.WriteHeader(res.StatusCode)
 	responseBody, err := json.Marshal(data)
 	if err != nil {
-		log.Fatal(err)
+		ErrorResponse(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	fmt.Fprint(w, string(responseBody))

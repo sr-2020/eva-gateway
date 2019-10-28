@@ -35,7 +35,9 @@ type  PushToken struct {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		Auth(r)
+		if err := Auth(r); err != nil {
+			log.Println(err)
+		}
 		next.ServeHTTP(w, r)
 	}
 
@@ -88,7 +90,8 @@ func LoginMiddleware(next http.Handler) http.Handler {
 		w.WriteHeader(res.StatusCode)
 		responseBody, err := json.Marshal(authToken)
 		if err != nil {
-			log.Fatal(err)
+			ErrorResponse(w, http.StatusBadRequest, err)
+			return
 		}
 
 		fmt.Fprint(w, string(responseBody))

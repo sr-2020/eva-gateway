@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -22,6 +23,7 @@ func ProxyOld(request *http.Request, url string, data interface{}) error {
 	req, err := http.NewRequest(request.Method, url, request.Body)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	req.Header = request.Header
@@ -29,10 +31,12 @@ func ProxyOld(request *http.Request, url string, data interface{}) error {
 	res, getErr := httpClient.Do(req)
 	if getErr != nil {
 		log.Fatal(getErr)
+		return getErr
 	}
 
 	if err := getBodyToInterface(&res.Body, &data); err != nil {
 		log.Fatal(err)
+		return err
 	}
 
 	return nil
@@ -102,8 +106,15 @@ func setInterfaceToBody(data interface{}, body *io.ReadCloser) error {
 	bodyResp, err := json.Marshal(data)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	*body = ioutil.NopCloser(strings.NewReader(string(bodyResp)))
 
 	return nil
+}
+
+func ErrorResponse(w http.ResponseWriter, code int, err error) {
+	log.Printf("Status code: %d Error: %v", code, err)
+	w.WriteHeader(code)
+	fmt.Fprint(w, err.Error())
 }
