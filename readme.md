@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.org/sr-2020/eva-gateway.svg?branch=master)](https://travis-ci.org/sr-2020/eva-auth)
 # Gateway
 
-- [Установка](#setup)
+- [Деплой платформы](#deploy)
+- [Локальная установка](#localsetup)
 - [Пользователи](#users)
 	- [Регистрация](#registration)
 	- [Авторизация](#authorization)
@@ -12,7 +13,22 @@
 	- [Отправка уровня слышимости маячков](#sendbeacons)
 	- [Список событий](#positions)
 
-## <a name="setup"></a> Установка
+## <a name="deploy"></a> Деплой платформы
+Для внесения изменений на продакшен нужно отредактировать файл `docker-compose.yml`:
+
+Для редактирования переменнных окружения с конфигурацией и секретами необходимо установить `ansible` и создать файл `ansible/.vault_pass` в который необходимо положить пароль.
+Узнать пароль можно у владельца репозитория.
+
+Выполнить следующую команду:
+```
+cd ansible
+ansible-vault edit services/platform/secrets
+```
+
+Закоммитеть изменения в файлах `docker-compose.yml` и `ansible/services/platform/secrets`. Файл `ansible/.vault_pass` находится в `.gitignore`.
+При пуше в любую ветку репозитория изменения применятся к проду.
+
+## <a name="localsetup"></a> Локальная установка
 Для локальной установки и тестирования нужно выполнить:
 ```
 make install

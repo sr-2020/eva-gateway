@@ -8,7 +8,6 @@ src/go_build_gateway
 .idea/
 *.env
 */*.env
-docker-compose.override.yml
 */*.token
 */*.terraform
 *.tfstate.backup
