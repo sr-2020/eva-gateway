@@ -59,8 +59,8 @@ services:
     ports:
       - ${BILLINGAPI_APP_PORT}:80
     environment:
-      POSTGRESQL_USER: app
-      POSTGRESQL_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRESQL_USER: ${POSTGRES_BILLINGAPI_USER}
+      POSTGRESQL_PASSWORD: ${POSTGRES_BILLINGAPI_PASSWORD}
     links:
       - postgres
 
