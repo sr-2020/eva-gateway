@@ -181,6 +181,12 @@ services:
     links:
       - backup
 
+  tomcat:
+    image: ${IMAGE_TOMCAT}
+    ports:
+      - ${TOMCAT_PORT}:8080
+    restart: always
+
 volumes:
   eva-platform-database:
   eva-platform-postgres:
