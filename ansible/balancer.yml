@@ -1,0 +1,15 @@
+---
+- name: Setup balancer
+  hosts: balancer
+
+  pre_tasks:
+    - set_fact:
+        nginx_vhosts: "{{ nginx_vhosts | default([]) | union([{'server_name': item.name + '.' + nginx_domain, 'listen': nginx_port, 'extra_parameters': nginx_proxy_pass}])}}"
+        nginx_upstreams: "{{ nginx_upstreams | default([]) | union([{'name': item.name, 'servers': {instance_ip + ':' + item.port: ''} }])}}"
+      with_items: "{{ nginx_services }}"
+      tags:
+        - nginx
+
+  roles:
+    - {role: gurkalov.create_users, tags: users, become: yes}
+    - {role: geerlingguy.nginx, tags: nginx, become: yes}

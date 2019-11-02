@@ -1,0 +1,31 @@
+---
+instance_ip: 35.228.197.20
+
+nginx_remove_default_vhost: true
+
+nginx_domain: 'evarun.ru'
+nginx_port: '80'
+nginx_proxy_pass:  |
+  location / {
+    add_header Access-Control-Allow-Origin *;
+
+    proxy_set_header Host {{ item.name }}.{{nginx_domain}};
+    proxy_pass http://{{ item.name }};
+  }
+
+nginx_services:
+  - { name: 'gateway', port: '7000'}
+  - { name: 'auth', port: '7002'}
+  - { name: 'position', port: '7003'}
+  - { name: 'billing', port: '7004'}
+  - { name: 'push', port: '7005'}
+  - { name: 'model-engine', port: '7006'}
+  - { name: 'models-manager', port: '7007'}
+  - { name: 'pma', port: '7050'}
+  - { name: 'ppa', port: '7051'}
+
+users:
+  - name: aeremin
+    sudo: true
+    sudo_nopasswd: true
+    ssh_key: "{{ vault_aeremin_keys }}"
