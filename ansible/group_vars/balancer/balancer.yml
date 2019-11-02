@@ -23,6 +23,7 @@ nginx_services:
   - { name: 'models-manager', port: '7007'}
   - { name: 'pma', port: '7050'}
   - { name: 'ppa', port: '7051'}
+  - { name: 'blincom', port: '7012'}
 
 users:
   - name: aeremin
