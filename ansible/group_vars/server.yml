@@ -16,6 +16,11 @@ users:
     sudo_nopasswd: true
     ssh_key: "{{ vault_sluchaj_keys }}"
 
+  - name: ingri
+    sudo: true
+    sudo_nopasswd: true
+    ssh_key: "{{ vault_ingri_keys }}"
+
 services:
   - name: platform
     deploy: |

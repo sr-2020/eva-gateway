@@ -31,10 +31,7 @@ ansible-vault edit services/platform/secrets
 ### <a name="deploy-docker"></a> Docker
 Установить `docker` и выполнить следующие команды:
 ```
-docker run -it --rm -P -v $(pwd)/ansible:/ansible -w "/ansible" ansible/container-conductor-ubuntu-bionic:0.9.3rc4 /bin/bash
-apt install nano
-env EDITOR=nano ansible-vault edit services/platform/secrets
-chmod 644 services/platform/secrets
+docker run -it --rm -v $(pwd)/ansible:/ansible sr2020/ansible ansible-vault edit services/platform/secrets
 ```
 
 Закоммитеть изменения в файлах `docker-compose.yml` и `ansible/services/platform/secrets`. Файл `ansible/.vault_pass` находится в `.gitignore`.
