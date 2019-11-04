@@ -82,6 +82,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, string(response))
 }
 

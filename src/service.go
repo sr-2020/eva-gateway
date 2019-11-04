@@ -109,6 +109,7 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(res.StatusCode)
+	w.Header().Set("Content-Type", res.Header.Get("Content-Type"))
 	responseBody, err := json.Marshal(data)
 	if err != nil {
 		ErrorResponse(w, http.StatusInternalServerError, err)
