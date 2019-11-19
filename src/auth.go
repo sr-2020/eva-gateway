@@ -182,8 +182,7 @@ func GetProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	if err := ProxyOld(r, cfg.Position+"/api/v1/users/"+strconv.Itoa(authUser.Id), &positionUser); err != nil {
-		ErrorResponse(w, http.StatusBadRequest, err)
-		return
+		fmt.Println(err)
 	}
 
 	temp := ProfileUser{}
