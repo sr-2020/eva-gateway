@@ -50,12 +50,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var positionUsers []PositionUser
 	var authUsers []AuthUser
 
-	if err := ProxyOld(r, cfg.Position + "/api/v1/users", &positionUsers); err != nil {
+	if err := ProxyOld(r, cfg.Position+"/api/v1/users", &positionUsers); err != nil {
 		ErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := ProxyOld(r, cfg.Auth + "/api/v1/users", &authUsers); err != nil {
+	if err := ProxyOld(r, cfg.Auth+"/api/v1/users", &authUsers); err != nil {
 		ErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
@@ -94,7 +94,7 @@ func PostPositions(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 
 	var position PositionUser
 
-	if err := ProxyOld(r, cfg.Position + "/api/v1/positions", &position); err != nil {
+	if err := ProxyOld(r, cfg.Position+"/api/v1/positions", &position); err != nil {
 		ErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}

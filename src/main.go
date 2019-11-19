@@ -14,6 +14,7 @@ func main() {
 
 	router := httprouter.New()
 	router.GET("/api/v1/users", GetUsers)
+	router.GET("/api/v1/profile", GetProfile)
 	router.POST("/api/v1/positions", PostPositions)
 
 	ServiceRouter(router, "/api/v1/auth/*path", "auth")

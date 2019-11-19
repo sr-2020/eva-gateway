@@ -22,7 +22,6 @@ func InitClient() {
 func ProxyOld(request *http.Request, url string, data interface{}) error {
 	req, err := http.NewRequest(request.Method, url, request.Body)
 	if err != nil {
-		log.Fatal(err)
 		return err
 	}
 
@@ -30,12 +29,10 @@ func ProxyOld(request *http.Request, url string, data interface{}) error {
 
 	res, getErr := httpClient.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
 		return getErr
 	}
 
 	if err := getBodyToInterface(&res.Body, &data); err != nil {
-		log.Fatal(err)
 		return err
 	}
 
