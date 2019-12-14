@@ -18,7 +18,6 @@ func main() {
 	router.POST("/api/v1/positions", PostPositions)
 
 	ServiceRouter(router, "/api/v1/auth/*path", "auth")
-	ServiceRouter(router, "/api/v1/billing/*path", "billing")
 	ServiceRouter(router, "/api/v1/position/*path", "position")
 	ServiceRouter(router, "/api/v1/push/*path", "push")
 	ServiceRouter(router, "/api/v1/model-engine/*path", "model-engine")
