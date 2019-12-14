@@ -37,7 +37,7 @@ services:
       DB_USERNAME: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
     links:
-      - database
+      - postgres
 
   position-redis:
     image: ${IMAGE_REDIS}
@@ -51,7 +51,6 @@ services:
       POSTGRESQLHANGFIRE_PASSWORD: ${POSTGRESQLHANGFIRE_PASSWORD}
       POSTGRESQLBILLING_USER: ${POSTGRESQLBILLING_USER}
       POSTGRESQLBILLING_PASSWORD: ${POSTGRESQLBILLING_PASSWORD}
-
     links:
       - postgres
 
@@ -114,28 +113,6 @@ services:
     links:
       - blincom-app
       - position-app
-
-  database:
-    image: ${IMAGE_DATABASE}
-    command: --default-authentication-plugin=mysql_native_password
-    ports:
-      - ${MYSQL_PORT}:3306
-    volumes:
-      - eva-platform-database:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: test
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-
-  pma:
-    image: ${IMAGE_PMA}
-    ports:
-      - ${PMA_PORT}:80
-    environment:
-      PMA_HOST: database
-    links:
-      - database
 
   postgres:
     image: ${IMAGE_POSTGRES}
@@ -210,5 +187,4 @@ services:
       - postgres
 
 volumes:
-  eva-platform-database:
   eva-platform-postgres:
