@@ -42,18 +42,6 @@ services:
   position-redis:
     image: ${IMAGE_REDIS}
 
-  billing-app:
-    image: ${BILLING_IMAGE_APP}
-    ports:
-      - ${BILLING_APP_PORT}:3000
-    environment:
-      POSTGRESQL_HOST: postgres
-      POSTGRESQL_DATABASE: billing
-      POSTGRESQL_USER: ${POSTGRES_USER}
-      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
-    links:
-      - postgres
-
   billingapi-app:
     image: ${BILLINGAPI_IMAGE_APP}
     ports:
@@ -105,7 +93,6 @@ services:
       GATEWAY_PORT: 80
       AUTH_HOST: http://auth-app
       POSITION_HOST: http://position-app
-      BILLING_HOST: http://billing-app:3000
       PUSH_HOST: http://push-app:3000
       MODEL_ENGINE_HOST: http://model-engine-app:3000
       MODELS_MANAGER_HOST: http://models-manager-app:3000
@@ -113,7 +100,6 @@ services:
     links:
       - auth-app
       - position-app
-      - billing-app
 
   gateway-blin:
     image: ${GATEWAY_IMAGE_APP}
