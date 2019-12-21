@@ -186,5 +186,14 @@ services:
     links:
       - postgres
 
+  flyway:
+    image: ${IMAGE_FLYWAY}
+    environment:
+      FLYWAY_SCHEMAS: public
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    links:
+      - postgres
+
 volumes:
   eva-platform-postgres:
