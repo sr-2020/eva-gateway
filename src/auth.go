@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -160,6 +161,10 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 	if err != nil {
 		log.Println(err)
 		return err
+	}
+
+	if authUser.Id == 0 {
+		return errors.New("Unauthorized")
 	}
 
 	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
