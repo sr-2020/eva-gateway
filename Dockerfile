@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY ./src .
 
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/gateway .
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/gateway ./cmd
 
 
 FROM alpine:latest

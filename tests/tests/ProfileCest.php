@@ -16,6 +16,6 @@ class ProfileCest
     public function failTest(ApiTester $I)
     {
         $I->sendGET(self::$route);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::BAD_REQUEST);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
     }
 }

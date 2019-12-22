@@ -1,21 +1,14 @@
-package main
+package middleware
 
 import (
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
+	"github.com/sr-2020/eva-gateway/app/adapter/support"
+	"github.com/sr-2020/eva-gateway/app/entity"
 	"log"
 	"net/http"
 	"strconv"
 )
-
-type Transfer struct {
-	From               int    `json:"sin_from"`
-	To                 int    `json:"sin_to"`
-	Amount             int    `json:"amount"`
-	RecurrentPaymentId int    `json:"recurrent_payment_id"`
-	Comment            string `json:"comment"`
-	CreatedAt          string `json:"created_at"`
-}
 
 func AccountInfoMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +23,8 @@ func AccountInfoMiddleware(next http.Handler) http.Handler {
 
 func TransferMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		var transfer Transfer
-		if err := getBodyToInterface(&r.Body, &transfer); err != nil {
+		var transfer entity.Transfer
+		if err := support.GetBodyToInterface(&r.Body, &transfer); err != nil {
 			log.Println(err)
 		}
 
@@ -41,7 +34,7 @@ func TransferMiddleware(next http.Handler) http.Handler {
 		}
 		transfer.From = sin
 
-		if err := setInterfaceToBody(transfer, &r.Body); err != nil {
+		if err := support.SetInterfaceToBody(transfer, &r.Body); err != nil {
 			log.Println(err)
 		}
 		next.ServeHTTP(w, r)
@@ -49,3 +42,4 @@ func TransferMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(fn)
 }
+

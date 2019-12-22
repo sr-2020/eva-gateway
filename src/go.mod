@@ -1,6 +1,6 @@
-module gateway
+module github.com/sr-2020/eva-gateway
 
-go 1.12
+go 1.13
 
 require github.com/BurntSushi/toml v0.1.0
 
