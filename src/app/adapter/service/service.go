@@ -11,7 +11,3 @@ type Service struct {
 }
 
 var Services map[string]Service
-
-func GetServices() map[string]Service {
-	return Services
-}

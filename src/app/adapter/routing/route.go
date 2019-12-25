@@ -15,22 +15,70 @@ import (
 	"time"
 )
 
-func InitRoute(router *httprouter.Router, services map[string]service.Service) {
+func InitRoute(prefix string, router *httprouter.Router, services map[string]service.Service) {
 	pr := presenter.NewJson()
 
-	router.GET("/api/v1/users", GetUsers(pr, services))
-	router.GET("/api/v1/profile", GetProfile(pr, services))
-	router.POST("/api/v1/positions", PostPositions(pr, services))
+	router.GET(prefix + "/users", GetUsers(pr, services))
+	router.GET(prefix + "/profile", GetProfile(pr, services))
+	router.POST(prefix + "/positions", PostPositions(pr, services))
 
-	sm := middleware.MiddlewareMap
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: nil,
+		Route: map[string][]middleware.Middleware{
+			"/profile": {
+				middleware.AuthMiddleware,
+			},
+			"/login": {
+				middleware.LoginMiddleware,
+			},
+		},
+	}, prefix + "/auth/*path", "auth")
 
-	ServiceRouter(router, pr, services, sm.Auth, "/api/v1/auth/*path", "auth")
-	ServiceRouter(router, pr, services, sm.Billing,"/api/v1/billing/*path", "billing")
-	ServiceRouter(router, pr, services, sm.Position,"/api/v1/position/*path", "position")
-	ServiceRouter(router, pr, services, sm.Push,"/api/v1/push/*path", "push")
-	ServiceRouter(router, pr, services, sm.ModelEngine,"/api/v1/model-engine/*path", "model-engine")
-	ServiceRouter(router, pr, services, sm.ModelsManager,"/api/v1/models-manager/*path", "models-manager")
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: []middleware.Middleware{
+			middleware.AuthMiddleware,
+		},
+		Route: map[string][]middleware.Middleware{
+			"/account_info": {
+				middleware.AccountInfoMiddleware,
+			},
+			"/transfer": {
+				middleware.TransferMiddleware,
+			},
+		},
+	},prefix + "/billing/*path", "billing")
 
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: []middleware.Middleware{
+			middleware.AuthMiddleware,
+		},
+		Route: nil,
+	},prefix + "/position/*path", "position")
+
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: []middleware.Middleware{
+			middleware.AuthMiddleware,
+		},
+		Route: nil,
+	},prefix + "/push/*path", "push")
+
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: []middleware.Middleware{
+			middleware.AuthMiddleware,
+		},
+		Route: nil,
+	},prefix + "/model-engine/*path", "model-engine")
+
+	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
+		Global: []middleware.Middleware{
+			middleware.AuthMiddleware,
+		},
+		Route: map[string][]middleware.Middleware{
+			"/character/model": {
+				middleware.CharacterModelMiddleware,
+			},
+		},
+	},prefix + "/models-manager/*path", "models-manager")
 }
 
 func ServiceRouter(router *httprouter.Router, pr presenter.Interface, ss map[string]service.Service, sm middleware.ServiceMiddleware, path string, serviceName string) {

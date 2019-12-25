@@ -4,7 +4,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
-	"github.com/sr-2020/eva-gateway/app/adapter/middleware"
 	"github.com/sr-2020/eva-gateway/app/adapter/routing"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
 	"net/http"
@@ -23,11 +22,10 @@ type Config struct {
 	ModelsManager string
 }
 
-var cfg Config
-var Services map[string]service.Service
-
 func InitConfig() Config {
-	if _, err := toml.DecodeFile(".env", &cfg); err != nil {
+	var cfg Config
+
+	if _, err := toml.DecodeFile("../.env", &cfg); err != nil {
 		port, _ := strconv.Atoi(os.Getenv("GATEWAY_PORT"))
 		cfg.Port = port
 
@@ -42,8 +40,8 @@ func InitConfig() Config {
 	return cfg
 }
 
-func InitServices(cfg Config, client client.Client) {
-	Services = map[string]service.Service{
+func InitServices(cfg Config, client client.Client) map[string]service.Service {
+	service.Services = map[string]service.Service{
 		"auth": {
 			Host:       cfg.Auth,
 			Path:       "/api/v1",
@@ -76,6 +74,7 @@ func InitServices(cfg Config, client client.Client) {
 		},
 	}
 
+	return service.Services
 }
 
 func Start(cfg Config) error {
@@ -83,11 +82,10 @@ func Start(cfg Config) error {
 		Timeout: time.Second * 10,
 	})
 
-	InitServices(cfg, httpClient)
-	middleware.InitMiddleware(Services)
+	services := InitServices(cfg, httpClient)
 
 	router := httprouter.New()
-	routing.InitRoute(router, Services)
+	routing.InitRoute("/api/v1", router, services)
 
 	return http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router)
 }

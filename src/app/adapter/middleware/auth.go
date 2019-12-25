@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
+	"github.com/sr-2020/eva-gateway/app/adapter/service"
 	"github.com/sr-2020/eva-gateway/app/adapter/support"
 	"github.com/sr-2020/eva-gateway/app/entity"
 	"log"
@@ -12,7 +13,7 @@ import (
 )
 
 func AuthMiddleware(next http.Handler) http.Handler {
-	authService := Services["auth"]
+	authService := service.Services["auth"]
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		if err := AuthRequest(r, authService.Host + "/api/v1/profile", nil); err != nil {
@@ -25,8 +26,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 }
 
 func LoginMiddleware(next http.Handler) http.Handler {
-	authService := Services["auth"]
-	pushService := Services["push"]
+	authService := service.Services["auth"]
+	pushService := service.Services["push"]
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var authLogin entity.AuthLogin
