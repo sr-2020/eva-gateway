@@ -1,11 +1,6 @@
 version: "3.6"
 
 services:
-  database:
-    volumes:
-      - eva-platform-database:/var/lib/mysql
-      - ./tests/database/mysql:/docker-entrypoint-initdb.d
-
   postgres:
     volumes:
       - eva-platform-postgres:/var/lib/postgresql/data
