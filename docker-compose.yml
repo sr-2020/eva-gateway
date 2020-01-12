@@ -187,5 +187,15 @@ services:
       DROPBOX_TOKEN: ${ADMIN_CLIENT_DROPBOX_TOKEN}
       SKIP_PREFLIGHT_CHECK: 1
 
+  grafana:
+    image: ${IMAGE_GRAFANA}
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - eva-platform-grafana:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+
 volumes:
   eva-platform-postgres:
+  eva-platform-grafana:
