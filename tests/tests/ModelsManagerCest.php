@@ -16,8 +16,6 @@ class ModelsManagerCest
         $I->seeResponseMatchesJsonType([
             'date' => 'string',
             'greeting' => 'string',
-            'url' => 'string',
-            'headers' => 'array',
         ]);
     }
 
