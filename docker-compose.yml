@@ -9,7 +9,7 @@ services:
       GATEWAY_PORT: 80
       AUTH_HOST: http://auth-app
       POSITION_HOST: http://position-app
-      BILLING_HOST: http://billing-app:3000
+      BILLING_HOST: http://instance.evarun.ru:7009
       PUSH_HOST: http://push-app:3000
     restart: on-failure
     links:

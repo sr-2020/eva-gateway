@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/gorilla/context"
-	"github.com/julienschmidt/httprouter"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,17 +17,6 @@ type Transfer struct {
 	CreatedAt          string `json:"created_at"`
 }
 
-func AccountInfoMiddleware(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-		ps := context.Get(r, "params").(httprouter.Params)
-		sin := r.Header.Get("X-User-Id")
-		r.URL.Path = ps.ByName("path") + "/" + sin
-		next.ServeHTTP(w, r)
-	}
-
-	return http.HandlerFunc(fn)
-}
-
 func TransferMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var transfer Transfer
@@ -42,9 +30,35 @@ func TransferMiddleware(next http.Handler) http.Handler {
 		}
 		transfer.From = sin
 
-		if err := setInterfaceToBody(transfer, &r.Body); err != nil {
-			log.Println(err)
-		}
+		r.Method = "GET"
+		r.URL.Path = "/api/billing/transfer/maketransfersinsin"
+		r.URL.RawQuery = fmt.Sprintf("character1=%d&character2=%d&amount=%d&comment=%s",
+			transfer.From, transfer.To, transfer.Amount, transfer.Comment)
+
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func AccountInfoMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		sin := r.Header.Get("X-User-Id")
+		r.URL.Path = "/api/billing/info/getbalance"
+		r.URL.RawQuery = "characterId=" + sin
+
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func GetTransfersMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		sin := r.Header.Get("X-User-Id")
+		r.URL.Path = "/api/Billing/info/gettransfers"
+		r.URL.RawQuery = "characterId=" + sin
+
 		next.ServeHTTP(w, r)
 	}
 

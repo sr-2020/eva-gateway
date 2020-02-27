@@ -68,6 +68,7 @@ func ServiceRegister(path string, middlewares ServiceMiddleware) http.Handler {
 		if err != nil {
 			log.Fatal(err)
 		}
+		urlPath.RawQuery = r.URL.RawQuery
 		r.URL = urlPath
 
 		middlewaresList := middlewares.Global

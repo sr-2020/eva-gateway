@@ -35,11 +35,14 @@ var MiddlewareMap = Middlewares{
 			AuthMiddleware,
 		},
 		Route: map[string][]Middleware{
+			"/transfer": {
+				TransferMiddleware,
+			},
 			"/account_info": {
 				AccountInfoMiddleware,
 			},
-			"/transfer": {
-				TransferMiddleware,
+			"/gettransfers": {
+				GetTransfersMiddleware,
 			},
 		},
 	},
