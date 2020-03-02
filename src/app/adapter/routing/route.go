@@ -39,14 +39,17 @@ func InitRoute(prefix string, router *httprouter.Router, services map[string]ser
 			middleware.AuthMiddleware,
 		},
 		Route: map[string][]middleware.Middleware{
-			"/account_info": {
+			"/balance": {
 				middleware.AccountInfoMiddleware,
 			},
 			"/transfer": {
 				middleware.TransferMiddleware,
 			},
+			"/transfers": {
+				middleware.GetTransfersMiddleware,
+			},
 		},
-	},prefix + "/billing/*path", "billing")
+	}, prefix + "/billing/*path", "billing")
 
 	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
 		Global: []middleware.Middleware{

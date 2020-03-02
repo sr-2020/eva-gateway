@@ -25,7 +25,7 @@ type Config struct {
 func InitConfig() Config {
 	var cfg Config
 
-	if _, err := toml.DecodeFile("../.env", &cfg); err != nil {
+	if _, err := toml.DecodeFile(".env", &cfg); err != nil {
 		port, _ := strconv.Atoi(os.Getenv("GATEWAY_PORT"))
 		cfg.Port = port
 

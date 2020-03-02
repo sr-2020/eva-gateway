@@ -93,6 +93,7 @@ services:
       AUTH_HOST: http://auth-app
       POSITION_HOST: http://position-app
       PUSH_HOST: http://push-app:3000
+      BILLING_HOST: http://billingapi-app
       MODEL_ENGINE_HOST: http://model-engine-app:3000
       MODELS_MANAGER_HOST: http://models-manager-app:3000
     restart: on-failure
