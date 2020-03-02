@@ -33,13 +33,17 @@ class BillingCest
         $I->haveHttpHeader('Content-Type', 'application/json');
         $I->haveHttpHeader('Authorization', 'Bearer ' . $I->getToken());
         $I->sendPOST(self::$route . '/transfer', [
-            'sin_to' => 77,
-            'amount' => 90,
+            'sin_to' => 131,
+            'amount' => 2,
             'comment' => 'Test transfer!!! & Thanks! ?.,*@#$%^()[]'
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([]);
+
+        $I->canSeeResponseContainsJson([
+            'status' => true,
+        ]);
     }
 
     public function transferFailTest(ApiTester $I)
@@ -58,6 +62,10 @@ class BillingCest
             'data' => 'null',
             'message' => 'string',
             'status' => 'boolean',
+        ]);
+
+        $I->canSeeResponseContainsJson([
+            'status' => false,
         ]);
     }
 
@@ -78,6 +86,10 @@ class BillingCest
             'data' => 'null',
             'message' => 'string',
             'status' => 'boolean',
+        ]);
+
+        $I->canSeeResponseContainsJson([
+            'status' => false,
         ]);
     }
 }
