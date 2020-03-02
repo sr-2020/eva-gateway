@@ -6,6 +6,7 @@ import (
 	"github.com/sr-2020/eva-gateway/app/entity"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -49,7 +50,7 @@ func TransferMiddleware(next http.Handler) http.Handler {
 		r.Method = "GET"
 		r.URL.Path = "/api/billing/transfer/maketransfersinsin"
 		r.URL.RawQuery = fmt.Sprintf("character1=%d&character2=%d&amount=%d&comment=%s",
-			transfer.From, transfer.To, transfer.Amount, transfer.Comment)
+			transfer.From, transfer.To, transfer.Amount, url.QueryEscape(transfer.Comment))
 
 		next.ServeHTTP(w, r)
 	}

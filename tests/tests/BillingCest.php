@@ -35,7 +35,7 @@ class BillingCest
         $I->sendPOST(self::$route . '/transfer', [
             'sin_to' => 77,
             'amount' => 90,
-            'comment' => 'Testtransfer'
+            'comment' => 'Test transfer!!! & Thanks! ?.,*@#$%^()[]'
         ]);
         $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
         $I->seeResponseIsJson();
