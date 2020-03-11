@@ -14,6 +14,11 @@
 - [Позиционирование](#position)
 	- [Отправка уровня слышимости маячков](#sendbeacons)
 	- [Список событий](#positions)
+- [Биллинг](#billing)
+	- [Состояние баланса](#balance)
+	- [Список трансферов](#transfers)
+	- [Создать трансфер](#transfer)
+
 
 ## <a name="deploy"></a> Деплой платформы
 Для внесения изменений на продакшен нужно отредактировать файл `docker-compose.yml`:
@@ -233,4 +238,38 @@ curl -X POST "http://gateway.evarun.ru/api/v1/position/positions" -H "Authorizat
 Пример:
 ```
 http://gateway.evarun.ru/api/v1/position/positions?sort=-id&select=user_id,beacons&filter[user_id]=1&limit=10&offset=100
+```
+
+## <a name="billing"></a> Биллинг
+#### <a name="balance"></a> Состояние баланса
+Получение состояния баланса осуществляется через GET запрос на http://gateway.evarun.ru/api/v1/billing/balance
+
+Пример:
+```
+curl -H "Authorization: Bearer MmVDDllSdUpKa0h5MFBDdjN1QnlVbEVC" "http://gateway.evarun.ru/api/v1/billing/balance"
+```
+
+#### <a name="transfers"></a> Список трансферов
+Получение списка трансферов осуществляется через GET запрос на http://gateway.evarun.ru/api/v1/billing/transfers
+
+Пример:
+```
+curl -H "Authorization: Bearer MmVDDllSdUpKa0h5MFBDdjN1QnlVbEVC" "http://gateway.evarun.ru/api/v1/billing/transfers"
+```
+
+#### <a name="transfe"></a> Создать трансфер
+Создание трансфера осуществляется через POST запрос на http://gateway.evarun.ru/api/v1/billing/transfer
+
+Тело запроса:
+```
+{
+  "sin_to": 131,
+  "amount": 90,
+  "comment": "Test transfer"
+}
+```
+
+Пример:
+```
+curl -X POST -H "Authorization: Bearer MmVDDllSdUpKa0h5MFBDdjN1QnlVbEVC" -H "Content-Type: application/json" "http://gateway.evarun.ru/api/v1/billing/transfer" -d "{\"sin_to\":131,\"amount\":90,\"comment\":\"Test transfer\"}"
 ```

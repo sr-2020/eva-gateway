@@ -19,13 +19,13 @@ func GetUsers(pr presenter.Interface, services map[string]service.Service) httpr
 		var positionUsers []entity.PositionUser
 		var authUsers []entity.AuthUser
 
-		if err := positionService.Client.ProxyOld(r, positionService.Host + "/api/v1/users", &positionUsers); err != nil {
+		if err := positionService.Client.ProxyOld(r, positionService.Host + "/api/v1/users?limit=10000", &positionUsers); err != nil {
 			log.Printf("Error: %v", err)
 			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if err := authService.Client.ProxyOld(r,  authService.Host+"/api/v1/users", &authUsers); err != nil {
+		if err := authService.Client.ProxyOld(r,  authService.Host+"/api/v1/users?limit=10000", &authUsers); err != nil {
 			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
 			return
 		}
