@@ -55,7 +55,7 @@ class BillingCest
             'amount' => 100000000,
             'comment' => 'Testtransfer'
         ]);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNPROCESSABLE_ENTITY);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([]);
         $I->seeResponseMatchesJsonType([
@@ -80,7 +80,7 @@ class BillingCest
             'comment' => 'string',
             'recurrent_payment_id' => 0
         ]);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNPROCESSABLE_ENTITY);
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([
             'data' => 'null',
