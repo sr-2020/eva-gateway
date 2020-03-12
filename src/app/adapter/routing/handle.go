@@ -8,7 +8,9 @@ import (
 	"github.com/sr-2020/eva-gateway/app/usecases"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
+	"time"
 )
 
 func GetUsers(pr presenter.Interface, services map[string]service.Service) httprouter.Handle {
@@ -19,7 +21,21 @@ func GetUsers(pr presenter.Interface, services map[string]service.Service) httpr
 		var positionUsers []entity.PositionUser
 		var authUsers []entity.AuthUser
 
-		if err := positionService.Client.ProxyOld(r, positionService.Host + "/api/v1/users?limit=10000", &positionUsers); err != nil {
+		params, err := url.ParseQuery(r.URL.RawQuery)
+		if err != nil {
+			log.Printf("Error: %v", err)
+			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		date := params.Get("date")
+		if date == "" {
+			now := time.Now()
+			date = now.AddDate(0, -1, 0).Format("2006-01-02")
+		}
+
+		positionFilter := "&filterge[updated_at]=" + url.QueryEscape(date)
+		if err := positionService.Client.ProxyOld(r, positionService.Host + "/api/v1/users?limit=10000" + positionFilter, &positionUsers); err != nil {
 			log.Printf("Error: %v", err)
 			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
 			return
