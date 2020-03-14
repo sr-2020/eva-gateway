@@ -80,16 +80,7 @@ class BillingCest
             'comment' => 'string',
             'recurrent_payment_id' => 0
         ]);
-        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNPROCESSABLE_ENTITY);
+        $I->seeResponseCodeIs(\Codeception\Util\HttpCode::UNAUTHORIZED);
         $I->seeResponseIsJson();
-        $I->seeResponseMatchesJsonType([
-            'data' => 'null',
-            'message' => 'string',
-            'status' => 'boolean',
-        ]);
-
-        $I->canSeeResponseContainsJson([
-            'status' => false,
-        ]);
     }
 }
