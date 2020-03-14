@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
@@ -18,6 +19,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		if err := AuthRequest(r, authService.Host + "/api/v1/profile", nil); err != nil {
 			log.Println(err)
+
+			pr := presenter.NewJson()
+			pr.Write(w, struct{}{}, 401)
+			return
 		}
 		next.ServeHTTP(w, r)
 	}
@@ -100,6 +105,10 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 	if err != nil {
 		log.Println(err)
 		return err
+	}
+
+	if authUser.Id == 0 {
+		return errors.New("Unauthorize")
 	}
 
 	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
