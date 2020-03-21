@@ -30,6 +30,19 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
+func AuthWithAnonymousMiddleware(next http.Handler) http.Handler {
+	authService := service.Services["auth"]
+
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		if err := AuthRequest(r, authService.Host + "/api/v1/profile", nil); err != nil {
+			log.Println(err)
+		}
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
 func LoginMiddleware(next http.Handler) http.Handler {
 	authService := service.Services["auth"]
 	pushService := service.Services["push"]

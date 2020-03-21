@@ -53,7 +53,7 @@ func InitRoute(prefix string, router *httprouter.Router, services map[string]ser
 
 	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
 		Global: []middleware.Middleware{
-			middleware.AuthMiddleware,
+			middleware.AuthWithAnonymousMiddleware,
 		},
 		Route: nil,
 	},prefix + "/position/*path", "position")
