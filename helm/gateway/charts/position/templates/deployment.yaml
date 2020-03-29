@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position
+spec:
+  selector:
+    matchLabels:
+      run: position
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        run: position
+    spec:
+      containers:
+        - name: position
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /api/v1/version
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /api/v1/version
+              port: 80
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: SKIP_COMPOSER
+              value: "1"
+            - name: SKIP_CHOWN
+              value: "1"
+            - name: DB_CONNECTION
+              value: "pgsql"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: position-configmap
+                  key: DB_HOST
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: position-configmap
+                  key: DB_DATABASE
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password

@@ -1,0 +1,16 @@
+flyway:
+  schemas: public
+  url: "jdbc:postgresql://postgres:5432/rc_sr2020"
+
+image:
+  repository: sr2020/db
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

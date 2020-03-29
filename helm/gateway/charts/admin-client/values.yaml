@@ -1,0 +1,21 @@
+replicaCount: 1
+
+app:
+  skipPreflightCheck: 1
+
+image:
+  repository: sr2020/admin-client
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

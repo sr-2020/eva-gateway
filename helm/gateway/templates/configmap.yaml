@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  postgresHost: {{ .Values.global.postgres.host | quote }}
+  authHost: {{ .Values.app.services.auth | quote }}
+  positionHost: {{ .Values.app.services.position | quote }}
+  pushHost: {{ .Values.app.services.push | quote }}
+  billingHost: {{ .Values.app.services.billing | quote }}
+  modelEngineHost: {{ .Values.app.services.modelEngine | quote }}
+  modelsManagerHost: {{ .Values.app.services.modelsManager | quote }}

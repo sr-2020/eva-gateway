@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rc-web
+spec:
+  selector:
+    matchLabels:
+      run: rc-web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: rc-web
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag }}"
+          imagePullPolicy: {{ .Values.image.frontend.pullPolicy }}
+          ports:
+            - containerPort: 80
+          resources:
+            {{- toYaml .Values.resources.frontend | nindent 12 }}
+        - name: backend
+          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}"
+          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: rc-web-configmap
+                  key: JDBC_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: web
+                  key: jwtSecret
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: userBackend
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: passwordBackend

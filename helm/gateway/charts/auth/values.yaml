@@ -1,0 +1,22 @@
+replicaCount: 1
+
+app:
+  postgres:
+    db: auth
+
+image:
+  repository: sr2020/eva-auth
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

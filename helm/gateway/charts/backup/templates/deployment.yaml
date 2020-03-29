@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backup
+spec:
+  selector:
+    matchLabels:
+      run: backup
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        run: backup
+    spec:
+      containers:
+        - name: cron
+          image: "{{ .Values.image.cron.repository }}:{{ .Values.image.cron.tag }}"
+          imagePullPolicy: {{ .Values.image.cron.pullPolicy }}
+          env:
+            - name: CRON_STRINGS
+              value: "0 0 * * * wget --post-data '' http://localhost/v1/backup"
+        - name: backup
+          image: "{{ .Values.image.backup.repository }}:{{ .Values.image.backup.tag }}"
+          imagePullPolicy: {{ .Values.image.backup.pullPolicy }}
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /v1/db
+              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /v1/db
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: PGHOST
+              value: "postgres"
+            - name: PGPORT
+              value: "5432"
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backup-configmap
+                  key: APP_PORT
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backup
+                  key: appPassword
+            - name: APP_CATALOG
+              valueFrom:
+                configMapKeyRef:
+                  name: backup-configmap
+                  key: APP_CATALOG
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup
+                  key: accessKeyId
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup
+                  key: secretAccessKey
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: backup-configmap
+                  key: AWS_REGION
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password

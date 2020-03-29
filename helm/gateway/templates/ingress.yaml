@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+spec:
+  tls:
+    - secretName: tls-secret-production
+  rules:
+  - host: gateway.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: gateway
+            servicePort: http
+  - host: web.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: web
+            servicePort: http
+  - host: rc-web.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: rc-web
+            servicePort: http
+  - host: admin-client.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: admin-client
+            servicePort: http
+  - host: pg-admin.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: pg-admin
+            servicePort: http

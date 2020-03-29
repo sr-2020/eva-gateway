@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: dockage/phppgadmin
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

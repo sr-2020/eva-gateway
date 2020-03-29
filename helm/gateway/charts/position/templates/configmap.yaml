@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: position-configmap
+data:
+  DB_HOST: {{ if .Values.global }}{{ .Values.global.postgres.host }}{{else}}postgres{{ end }}
+  DB_DATABASE: {{ .Values.app.postgres.db | quote }}

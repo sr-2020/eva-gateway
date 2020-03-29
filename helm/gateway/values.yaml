@@ -1,0 +1,118 @@
+# Default values for mychart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+app:
+  services:
+    auth: "http://auth"
+    position: "http://position"
+    push: "http://push.k8.evarun.ru"
+    billing: "http://billing"
+    modelEngine: "http://model-engine.k8.evarun.ru"
+    modelsManager: "http://models-manager.k8.evarun.ru"
+
+image:
+  repository: sr2020/eva-gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+global:
+  postgres:
+    host: postgres
+
+# services
+auth:
+  image:
+    repository: sr2020/eva-position
+    tag: latest
+    pullPolicy: IfNotPresent
+
+admin-client:
+  image:
+    repository: sr2020/admin-client
+    tag: latest
+    pullPolicy: IfNotPresent
+
+backup:
+  image:
+    backup:
+      repository: sr2020/krohobor
+      tag: latest
+      pullPolicy: IfNotPresent
+    cron:
+      repository: xordiv/docker-alpine-cron
+      tag: latest
+      pullPolicy: IfNotPresent
+
+billing:
+  image:
+    repository: sr2020/billingapi
+    tag: latest
+    pullPolicy: IfNotPresent
+
+flyway:
+  image:
+    repository: sr2020/db
+    tag: latest
+    pullPolicy: IfNotPresent
+
+grafana:
+  image:
+    repository: grafana/grafana
+    tag: latest
+    pullPolicy: IfNotPresent
+
+pg-admin:
+  image:
+    repository: dockage/phppgadmin
+    tag: latest
+    pullPolicy: IfNotPresent
+
+position:
+  image:
+    repository: sr2020/eva-position
+    tag: latest
+    pullPolicy: IfNotPresent
+
+postgres:
+  image:
+    repository: postgres
+    tag: 11.7
+    pullPolicy: IfNotPresent
+
+rc-web:
+  image:
+    backend:
+      repository: sr2020/testjpa-backend
+      tag: latest
+      pullPolicy: IfNotPresent
+    frontend:
+      repository: sr2020/testjpa-frontend
+      tag: k8s
+      pullPolicy: IfNotPresent
+
+web:
+  image:
+    backend:
+      repository: sr2020/testjpa-backend
+      tag: latest
+      pullPolicy: IfNotPresent
+    frontend:
+      repository: sr2020/testjpa-frontend
+      tag: k8s
+      pullPolicy: IfNotPresent
+
+# resources
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

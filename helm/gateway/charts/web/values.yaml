@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  backend:
+    repository: sr2020/testjpa-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: sr2020/testjpa-frontend
+    tag: k8s
+    pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+
+resources:
+  frontend:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  backend:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi

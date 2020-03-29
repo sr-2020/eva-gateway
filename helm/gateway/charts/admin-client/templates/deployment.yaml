@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-client
+spec:
+  selector:
+    matchLabels:
+      run: admin-client
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        run: admin-client
+    spec:
+      containers:
+        - name: admin-client
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3001
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: SKIP_PREFLIGHT_CHECK
+              valueFrom:
+                configMapKeyRef:
+                  name: admin-client-configmap
+                  key: SKIP_PREFLIGHT_CHECK
+            - name: DROPBOX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: admin-client
+                  key: dropboxToken
