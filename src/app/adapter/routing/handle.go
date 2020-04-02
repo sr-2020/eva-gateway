@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+func GetVersion(pr presenter.Interface) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		_ = pr.Write(w, "0.0.2", http.StatusOK)
+	}
+}
+
 func GetUsers(pr presenter.Interface, services map[string]service.Service) httprouter.Handle {
 	positionService := services["position"]
 	authService := services["auth"]

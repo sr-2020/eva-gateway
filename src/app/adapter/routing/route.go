@@ -18,6 +18,7 @@ import (
 func InitRoute(prefix string, router *httprouter.Router, services map[string]service.Service) {
 	pr := presenter.NewJson()
 
+	router.GET(prefix + "/version", GetVersion(pr))
 	router.GET(prefix + "/users", GetUsers(pr, services))
 	router.GET(prefix + "/profile", GetProfile(pr, services))
 	router.POST(prefix + "/positions", PostPositions(pr, services))
