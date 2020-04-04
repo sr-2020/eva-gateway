@@ -8,10 +8,10 @@ app:
   services:
     auth: "http://auth"
     position: "http://position"
-    push: "http://push.k8.evarun.ru"
+    push: "http://push"
     billing: "http://billing"
-    modelEngine: "http://model-engine.k8.evarun.ru"
-    modelsManager: "http://models-manager.k8.evarun.ru"
+    modelEngine: "http://model-engine"
+    modelsManager: "http://models-manager"
 
 image:
   repository: sr2020/eva-gateway
@@ -29,7 +29,7 @@ global:
 # services
 auth:
   image:
-    repository: sr2020/eva-position
+    repository: sr2020/eva-auth
     tag: latest
     pullPolicy: IfNotPresent
 

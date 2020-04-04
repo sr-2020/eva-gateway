@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: push-configmap
+data:
+  POSTGRESQL_HOST: {{ if .Values.global }}{{ .Values.global.postgres.host }}{{else}}postgres{{ end }}
+  POSTGRESQL_DATABASE: {{ .Values.app.postgres.db | quote }}
