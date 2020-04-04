@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pg-admin
+  name: ppa
 spec:
   selector:
     matchLabels:
-      run: pg-admin
+      run: ppa
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        run: pg-admin
+        run: ppa
     spec:
       containers:
-        - name: pg-admin
+        - name: ppa
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -24,5 +24,5 @@ spec:
             - name: PHP_PG_ADMIN_SERVER_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: pg-admin-configmap
+                  name: ppa-configmap
                   key: PHP_PG_ADMIN_SERVER_HOST
