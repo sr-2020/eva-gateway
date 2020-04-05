@@ -27,13 +27,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /v1/db
-              port: http
-#          readinessProbe:
-#            httpGet:
-#              path: /v1/db
-#              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /v1/db
+              port: 80
           env:
             - name: PGHOST
               value: "postgres"
@@ -69,12 +67,12 @@ spec:
                 configMapKeyRef:
                   name: backup-configmap
                   key: AWS_REGION
-            - name: DB_USERNAME
+            - name: PGUSER
               valueFrom:
                 secretKeyRef:
                   name: postgres
                   key: user
-            - name: DB_PASSWORD
+            - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres

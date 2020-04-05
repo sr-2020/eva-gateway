@@ -24,15 +24,33 @@ spec:
         - backend:
             serviceName: rc-web
             servicePort: http
+  - host: ppa.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: ppa
+            servicePort: http
+  - host: push.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: push
+            servicePort: http
+  - host: model-engine.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: model-engine
+            servicePort: http
+  - host: models-manager.production.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: models-manager
+            servicePort: http
   - host: admin-client.production.evarun.ru
     http:
       paths:
         - backend:
             serviceName: admin-client
-            servicePort: http
-  - host: pg-admin.production.evarun.ru
-    http:
-      paths:
-        - backend:
-            serviceName: pg-admin
             servicePort: http

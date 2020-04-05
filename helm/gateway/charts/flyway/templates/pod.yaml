@@ -5,15 +5,17 @@ metadata:
   labels:
     app: flyway
 spec:
-  restartPolicy: Never
+  restartPolicy: Always
   containers:
+    - name: myapp-container
+      image: busybox:1.28
+      command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
     - name: flyway
       image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       command: ["/flyway/flyway"]
       args: ["migrate"]
-      resources:
-        {{- toYaml .Values.resources | nindent 12 }}
       env:
         - name: FLYWAY_SCHEMAS
           valueFrom:

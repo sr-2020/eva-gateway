@@ -18,8 +18,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: PHP_PG_ADMIN_SERVER_HOST
               valueFrom:
