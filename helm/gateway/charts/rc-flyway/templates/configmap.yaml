@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rc-flyway-configmap
+data:
+  FLYWAY_SCHEMAS: {{ .Values.flyway.schemas | quote }}
+  FLYWAY_URL: {{ .Values.flyway.url | quote }}

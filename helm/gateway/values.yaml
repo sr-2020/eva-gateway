@@ -68,7 +68,7 @@ grafana:
     tag: latest
     pullPolicy: IfNotPresent
 
-pg-admin:
+ppa:
   image:
     repository: dockage/phppgadmin
     tag: latest
@@ -84,6 +84,24 @@ postgres:
   image:
     repository: postgres
     tag: 11.7
+    pullPolicy: IfNotPresent
+
+push:
+  image:
+    repository: sr2020/push
+    tag: latest
+    pullPolicy: IfNotPresent
+
+model-engine:
+  image:
+    repository: sr2020/model-engine
+    tag: latest
+    pullPolicy: IfNotPresent
+
+models-manager:
+  image:
+    repository: sr2020/models-manager
+    tag: latest
     pullPolicy: IfNotPresent
 
 rc-web:
