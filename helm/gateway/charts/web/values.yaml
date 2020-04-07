@@ -7,7 +7,7 @@ image:
     pullPolicy: IfNotPresent
   frontend:
     repository: sr2020/testjpa-frontend
-    tag: k8s
+    tag: latest
     pullPolicy: IfNotPresent
 
 service:

@@ -13,6 +13,7 @@ spec:
         - model-engine.evarun.ru
         - models-manager.evarun.ru
         - admin-client.evarun.ru
+        - position.evarun.ru
       secretName: tls-secret
   rules:
   - host: gateway.evarun.ru
@@ -62,4 +63,10 @@ spec:
       paths:
         - backend:
             serviceName: admin-client
+            servicePort: http
+  - host: position.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: position
             servicePort: http
