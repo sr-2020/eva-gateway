@@ -18,8 +18,14 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /swagger/v1/index.html
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /swagger/v1/index.html
+              port: 80
           env:
             - name: DBHOST
               valueFrom:

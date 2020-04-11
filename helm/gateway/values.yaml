@@ -62,6 +62,12 @@ flyway:
     tag: latest
     pullPolicy: IfNotPresent
 
+rc-flyway:
+  image:
+    repository: sr2020/db
+    tag: latest
+    pullPolicy: IfNotPresent
+
 grafana:
   image:
     repository: grafana/grafana

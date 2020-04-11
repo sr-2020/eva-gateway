@@ -14,6 +14,8 @@ spec:
         - models-manager.evarun.ru
         - admin-client.evarun.ru
         - position.evarun.ru
+        - billing.evarun.ru
+        - auth.evarun.ru
       secretName: tls-secret
   rules:
   - host: gateway.evarun.ru
