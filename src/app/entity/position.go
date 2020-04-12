@@ -3,6 +3,7 @@ package entity
 type PositionLocation struct {
 	Id    int    `json:"id"`
 	Label string `json:"label"`
+	Options map[string]interface{}
 }
 
 type PositionUser struct {
