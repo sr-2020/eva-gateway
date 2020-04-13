@@ -77,6 +77,7 @@ func GetProfile(pr presenter.Interface, services map[string]service.Service) htt
 			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		defer respProfile.Body.Close()
 
 		if respProfile.StatusCode != http.StatusOK {
 			_ = pr.Write(w, nil, http.StatusUnauthorized)
@@ -108,6 +109,7 @@ func PostPositions(pr presenter.Interface, services map[string]service.Service) 
 			_ = pr.Write(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		defer respProfile.Body.Close()
 
 		if respProfile.StatusCode != http.StatusOK {
 			_ = pr.Write(w, nil, http.StatusUnauthorized)

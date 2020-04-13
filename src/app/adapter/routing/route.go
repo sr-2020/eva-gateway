@@ -142,7 +142,7 @@ func ProxyHandler(pr presenter.Interface) http.HandlerFunc {
 			_ = pr.Write(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		defer res.Body.Close()
 		_ = pr.Write(w, data, res.StatusCode)
 	}
 }

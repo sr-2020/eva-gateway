@@ -114,11 +114,12 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 	req.Header.Set("Authorization", request.Header.Get("Authorization"))
 
 	var authUser entity.AuthUser
-	_, err = httpClient.ProxyData(req, &authUser)
+	resp, err := httpClient.ProxyData(req, &authUser)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+	defer resp.Body.Close()
 
 	if authUser.Id == 0 {
 		return errors.New("Unauthorize")
