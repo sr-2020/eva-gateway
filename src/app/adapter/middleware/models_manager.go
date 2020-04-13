@@ -19,11 +19,6 @@ func CharacterModelMiddleware(next http.Handler) http.Handler {
 		if r.Method == "POST" {
 			positionService := service.Services["position"]
 
-			var event entity.ModelsManagerEvent
-			if err := support.GetBodyToInterface(&r.Body, &event); err != nil {
-				log.Println(err)
-			}
-
 			var positionUser entity.PositionUser
 			req, err := http.NewRequest("GET", positionService.Host, nil)
 			if err != nil {
@@ -37,6 +32,10 @@ func CharacterModelMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
+			var event entity.ModelsManagerEvent
+			if err := support.GetBodyToInterface(&r.Body, &event); err != nil {
+				log.Println(err)
+			}
 			if positionUser.Location != nil && positionUser.Location.Id != 0 {
 				modelsManagerLocation := entity.ModelsManagerLocation{
 					Id: positionUser.Location.Id,
