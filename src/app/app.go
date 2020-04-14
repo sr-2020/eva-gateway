@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/go-redis/redis/v7"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
 	"github.com/sr-2020/eva-gateway/app/adapter/routing"
@@ -20,6 +21,7 @@ type Config struct {
 	Push          string
 	ModelEngine   string
 	ModelsManager string
+	Redis         string
 }
 
 func InitConfig() Config {
@@ -35,6 +37,7 @@ func InitConfig() Config {
 		cfg.Push = os.Getenv("PUSH_HOST")
 		cfg.ModelEngine = os.Getenv("MODEL_ENGINE_HOST")
 		cfg.ModelsManager = os.Getenv("MODELS_MANAGER_HOST")
+		cfg.Redis = os.Getenv("REDIS_HOST")
 	}
 
 	return cfg
@@ -82,10 +85,16 @@ func Start(cfg Config) error {
 		Timeout: time.Second * 10,
 	})
 
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis,
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
 	services := InitServices(cfg, httpClient)
 
 	router := httprouter.New()
-	routing.InitRoute("/api/v1", router, services)
+	routing.InitRoute("/api/v1", router, redisClient, services)
 
 	return http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router)
 }

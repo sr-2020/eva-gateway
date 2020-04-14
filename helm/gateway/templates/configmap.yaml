@@ -10,3 +10,4 @@ data:
   billingHost: {{ .Values.app.services.billing | quote }}
   modelEngineHost: {{ .Values.app.services.modelEngine | quote }}
   modelsManagerHost: {{ .Values.app.services.modelsManager | quote }}
+  redisHost: {{ .Values.app.services.redis | quote }}

@@ -2,6 +2,7 @@ package routing
 
 import (
 	"errors"
+	"github.com/go-redis/redis/v7"
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
@@ -15,8 +16,11 @@ import (
 	"time"
 )
 
-func InitRoute(prefix string, router *httprouter.Router, services map[string]service.Service) {
+func InitRoute(prefix string, router *httprouter.Router, redisClient *redis.Client, services map[string]service.Service) {
 	pr := presenter.NewJson()
+
+	router.GET(prefix + "/config/:key", GetConfig(pr, redisClient))
+	router.POST(prefix + "/config/:key", SetConfig(pr, redisClient))
 
 	router.GET(prefix + "/version", GetVersion(pr))
 	router.GET(prefix + "/users", GetUsers(pr, services))

@@ -2,7 +2,6 @@ package presenter
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -19,10 +18,19 @@ func (j Json) Write(w http.ResponseWriter, data interface{}, statusCode int) err
 		return err
 	}
 
-	w.WriteHeader(statusCode)
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, string(response))
+	w.WriteHeader(statusCode)
+
+	_, _ = w.Write(response)
 
 	return nil
 }
 
+func (j Json) WriteRaw(w http.ResponseWriter, data []byte, statusCode int) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	_, _ = w.Write(data)
+
+	return nil
+}

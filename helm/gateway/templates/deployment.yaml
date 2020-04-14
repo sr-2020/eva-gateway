@@ -63,3 +63,8 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
                   key: billingHost
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: redisHost

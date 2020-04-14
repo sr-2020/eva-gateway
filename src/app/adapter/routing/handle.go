@@ -1,17 +1,52 @@
 package routing
 
 import (
+	"github.com/go-redis/redis/v7"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
 	"github.com/sr-2020/eva-gateway/app/entity"
 	"github.com/sr-2020/eva-gateway/app/usecases"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 )
+
+func GetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		key := ps.ByName("key")
+
+		val, err := client.Get(key).Result()
+		if err == redis.Nil {
+			_ = pr.Write(w, struct{}{}, http.StatusNotFound)
+		} else if err != nil {
+			_ = pr.Write(w, err, http.StatusInternalServerError)
+		}
+
+		_ = pr.WriteRaw(w, []byte(val), http.StatusOK)
+	}
+}
+
+func SetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		key := ps.ByName("key")
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			_ = pr.Write(w, err, http.StatusBadRequest)
+		}
+
+		value := string(body)
+		if err := client.Set(key, value, 0).Err(); err != nil {
+			_ = pr.Write(w, err, http.StatusInternalServerError)
+		}
+
+		_ = pr.WriteRaw(w, []byte(value), http.StatusCreated)
+	}
+}
 
 func GetVersion(pr presenter.Interface) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

@@ -12,6 +12,7 @@ app:
     billing: "http://billing"
     modelEngine: "http://model-engine"
     modelsManager: "http://models-manager"
+    redis: "redis:6379"
 
 image:
   repository: sr2020/eva-gateway
@@ -53,13 +54,13 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: latest
+    tag: cc30222
     pullPolicy: IfNotPresent
 
 flyway:
   image:
     repository: sr2020/db
-    tag: latest
+    tag: e9364cd
     pullPolicy: IfNotPresent
 
 rc-flyway:
@@ -92,22 +93,28 @@ postgres:
     tag: 11.7
     pullPolicy: IfNotPresent
 
+redis:
+  image:
+    repository: redis
+    tag: 5.0.8
+    pullPolicy: IfNotPresent
+
 push:
   image:
     repository: sr2020/push
-    tag: latest
+    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: latest
+    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: latest
+    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
     pullPolicy: IfNotPresent
 
 rc-web:

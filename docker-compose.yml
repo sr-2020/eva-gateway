@@ -69,6 +69,7 @@ services:
       BILLING_HOST: http://billingapi-app
       MODEL_ENGINE_HOST: http://model-engine.evarun.ru
       MODELS_MANAGER_HOST: http://models-manager.evarun.ru
+      REDIS_HOST: gateway-redis:6379
     restart: on-failure
     links:
       - auth-app
@@ -76,6 +77,9 @@ services:
       - push-app
       - model-engine-app
       - models-manager-app
+
+  gateway-redis:
+    image: ${IMAGE_REDIS}
 
   postgres:
     image: ${IMAGE_POSTGRES}
