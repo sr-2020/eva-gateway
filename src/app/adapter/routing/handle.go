@@ -17,13 +17,19 @@ import (
 
 func GetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "*")
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+
 		key := ps.ByName("key")
 
 		val, err := client.Get(key).Result()
 		if err == redis.Nil {
 			_ = pr.Write(w, struct{}{}, http.StatusNotFound)
+			return
 		} else if err != nil {
 			_ = pr.Write(w, err, http.StatusInternalServerError)
+			return
 		}
 
 		_ = pr.WriteRaw(w, []byte(val), http.StatusOK)
@@ -32,16 +38,22 @@ func GetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 
 func SetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "*")
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+
 		key := ps.ByName("key")
 
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			_ = pr.Write(w, err, http.StatusBadRequest)
+			return
 		}
 
 		value := string(body)
 		if err := client.Set(key, value, 0).Err(); err != nil {
 			_ = pr.Write(w, err, http.StatusInternalServerError)
+			return
 		}
 
 		_ = pr.WriteRaw(w, []byte(value), http.StatusCreated)

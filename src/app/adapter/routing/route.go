@@ -17,6 +17,7 @@ import (
 )
 
 func EnableCors(router *httprouter.Router) {
+	router.HandleOPTIONS = true
 	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Access-Control-Request-Method") != "" {
 			// Set CORS headers
@@ -72,6 +73,7 @@ func InitRoute(prefix string, router *httprouter.Router, redisClient *redis.Clie
 	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
 		Global: []middleware.Middleware{
 			middleware.AuthWithAnonymousMiddleware,
+			middleware.CorsMiddleware,
 		},
 		Route: nil,
 	},prefix + "/position/*path", "position")
