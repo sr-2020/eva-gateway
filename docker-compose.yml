@@ -156,6 +156,8 @@ services:
       POSTGRESQL_DATABASE: models
       POSTGRESQL_USER: ${POSTGRES_USER}
       POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
+      MODEL_ENGINE_URL: http://model-engine-app:3000
+      PUSH_URL: http://push-app:3000
     links:
       - postgres
 
