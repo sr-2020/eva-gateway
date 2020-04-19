@@ -16,6 +16,19 @@ import (
 	"time"
 )
 
+func EnableCors(router *httprouter.Router) {
+	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Access-Control-Request-Method") != "" {
+			// Set CORS headers
+			header := w.Header()
+			header.Set("Access-Control-Allow-Methods", r.Header.Get("Allow"))
+			header.Set("Access-Control-Allow-Origin", "*")
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 func InitRoute(prefix string, router *httprouter.Router, redisClient *redis.Client, services map[string]service.Service) {
 	pr := presenter.NewJson()
 

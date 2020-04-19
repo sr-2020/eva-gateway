@@ -95,6 +95,7 @@ func Start(cfg Config) error {
 
 	router := httprouter.New()
 	routing.InitRoute("/api/v1", router, redisClient, services)
+	routing.EnableCors(router)
 
 	return http.ListenAndServe(":" + strconv.Itoa(cfg.Port), router)
 }

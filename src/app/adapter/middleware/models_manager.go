@@ -17,6 +17,11 @@ func CharacterModelMiddleware(next http.Handler) http.Handler {
 		r.URL.Path = ps.ByName("path") + "/" + userId
 
 		if r.Method == "POST" {
+			modelsManagerLocation := entity.ModelsManagerLocation{
+				Id: 1,
+				ManaLevel: 0,
+			}
+
 			positionService := service.Services["position"]
 
 			var positionUser entity.PositionUser
@@ -28,8 +33,6 @@ func CharacterModelMiddleware(next http.Handler) http.Handler {
 			req.Header = r.Header
 			if err := positionService.Client.ProxyOld(req, positionService.Host + "/api/v1/users/" + userId, &positionUser); err != nil {
 				log.Printf("Error: %v", err)
-				next.ServeHTTP(w, r)
-				return
 			}
 
 			var event entity.ModelsManagerEvent
@@ -37,19 +40,15 @@ func CharacterModelMiddleware(next http.Handler) http.Handler {
 				log.Println(err)
 			}
 			if positionUser.Location != nil && positionUser.Location.Id != 0 {
-				modelsManagerLocation := entity.ModelsManagerLocation{
-					Id: positionUser.Location.Id,
-					ManaLevel: 0,
-				}
-
+				modelsManagerLocation.Id = positionUser.Location.Id
 				if v, ok := positionUser.Location.Options["manaLevel"]; ok {
 					if v, ok := v.(float64); ok {
 						modelsManagerLocation.ManaLevel = int(v)
 					}
 				}
-				event.Data["location"] = modelsManagerLocation
 			}
 
+			event.Data["location"] = modelsManagerLocation
 			if err := support.SetInterfaceToBody(event, &r.Body); err != nil {
 				log.Println(err)
 			}
