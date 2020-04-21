@@ -16,7 +16,7 @@ app:
 
 image:
   repository: sr2020/eva-gateway
-  tag: latest
+  tag: fe98a5d
   pullPolicy: IfNotPresent
 
 service:
@@ -37,7 +37,7 @@ auth:
 admin-client:
   image:
     repository: sr2020/admin-client
-    tag: latest
+    tag: 4e08154
     pullPolicy: IfNotPresent
 
 backup:
@@ -54,19 +54,19 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: cc30222
+    tag: bb625b3
     pullPolicy: IfNotPresent
 
 flyway:
   image:
     repository: sr2020/db
-    tag: e9364cd
+    tag: 214c0bd
     pullPolicy: IfNotPresent
 
 rc-flyway:
   image:
     repository: sr2020/db
-    tag: latest
+    tag: 214c0bd
     pullPolicy: IfNotPresent
 
 grafana:
@@ -84,7 +84,7 @@ ppa:
 position:
   image:
     repository: sr2020/eva-position
-    tag: latest
+    tag: c56c244
     pullPolicy: IfNotPresent
 
 postgres:
@@ -102,41 +102,41 @@ redis:
 push:
   image:
     repository: sr2020/push
-    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
+    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
+    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: 262b6c9ee63b0dd1a8a64a1f0a6980f70b2ace6e
+    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
     pullPolicy: IfNotPresent
 
 rc-web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: latest
+      tag: d2fdda9a
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: k8s
+      tag: d2fdda9a
       pullPolicy: IfNotPresent
 
 web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: latest
+      tag: d2fdda9a
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: k8s
+      tag: d2fdda9a
       pullPolicy: IfNotPresent
 
 # resources
