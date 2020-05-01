@@ -15,9 +15,14 @@ app:
     redis: "redis:6379"
 
 image:
-  repository: sr2020/eva-gateway
-  tag: fe98a5d
-  pullPolicy: IfNotPresent
+  nginx:
+    repository: nginx
+    tag: 1.17.10-alpine
+    pullPolicy: IfNotPresent
+  gateway:
+    repository: sr2020/eva-gateway
+    tag: fe98a5d
+    pullPolicy: IfNotPresent
 
 service:
   type: LoadBalancer
@@ -54,19 +59,19 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: bb625b3
+    tag: 9cac8d9
     pullPolicy: IfNotPresent
 
 flyway:
   image:
     repository: sr2020/db
-    tag: 214c0bd
+    tag: 7c70ce5
     pullPolicy: IfNotPresent
 
 rc-flyway:
   image:
     repository: sr2020/db
-    tag: 214c0bd
+    tag: b6cc10a
     pullPolicy: IfNotPresent
 
 grafana:
@@ -84,7 +89,7 @@ ppa:
 position:
   image:
     repository: sr2020/eva-position
-    tag: c56c244
+    tag: 0bc5990
     pullPolicy: IfNotPresent
 
 postgres:
@@ -102,41 +107,41 @@ redis:
 push:
   image:
     repository: sr2020/push
-    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
+    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
+    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: ddea14a4094117aabcbe4999c822b6d4cb9497d4
+    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
     pullPolicy: IfNotPresent
 
 rc-web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: d2fdda9a
+      tag: 938e5ecf
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: d2fdda9a
+      tag: 938e5ecf
       pullPolicy: IfNotPresent
 
 web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: d2fdda9a
+      tag: 938e5ecf
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: d2fdda9a
+      tag: 938e5ecf
       pullPolicy: IfNotPresent
 
 # resources

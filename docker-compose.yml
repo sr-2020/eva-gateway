@@ -158,6 +158,7 @@ services:
       POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
       MODEL_ENGINE_URL: http://model-engine-app:3000
       PUSH_URL: http://push-app:3000
+      ENABLE_PUBSUB: "false"
     links:
       - postgres
 

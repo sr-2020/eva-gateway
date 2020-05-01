@@ -15,9 +15,9 @@ spec:
         run: gateway
     spec:
       containers:
-        - name: gateway
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: nginx
+          image: "{{ .Values.image.nginx.repository }}:{{ .Values.image.nginx.tag }}"
+          imagePullPolicy: {{ .Values.image.nginx.pullPolicy }}
           ports:
             - containerPort: 80
           livenessProbe:
@@ -28,11 +28,28 @@ spec:
             httpGet:
               path: /api/v1/auth/version
               port: 80
+          volumeMounts:
+            - name: {{ .Release.Name }}-configmap-nginx
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+        - name: gateway
+          image: "{{ .Values.image.gateway.repository }}:{{ .Values.image.gateway.tag }}"
+          imagePullPolicy: {{ .Values.image.gateway.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/v1/auth/version
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /api/v1/auth/version
+              port: 8080
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: GATEWAY_PORT
-              value: "80"
+              value: "8080"
             - name: AUTH_HOST
               valueFrom:
                 configMapKeyRef:
@@ -68,3 +85,7 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
                   key: redisHost
+      volumes:
+        - name: {{ .Release.Name }}-configmap-nginx
+          configMap:
+            name: {{ .Release.Name }}-configmap-nginx
