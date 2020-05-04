@@ -1,7 +1,7 @@
-language: python
+language: go
 
-python:
-  - "2.7"
+go:
+  - "1.13"
 env:
   global:
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
@@ -31,3 +31,4 @@ jobs:
   - stage: test production
     script:
       - make test env=production
+      - cd src/tests/ && go test -v ./...
