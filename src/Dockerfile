@@ -8,4 +8,4 @@ COPY . .
 
 RUN go get github.com/smartystreets/goconvey
 
-CMD cd tests && $GOPATH/bin/goconvey -host 0.0.0.0 -cover=false
+CMD cd tests && $GOPATH/bin/goconvey -host 0.0.0.0 -cover=false -poll=10000ms
