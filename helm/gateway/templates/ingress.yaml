@@ -16,6 +16,7 @@ spec:
         - position.evarun.ru
         - billing.evarun.ru
         - auth.evarun.ru
+        - convey.evarun.ru
       secretName: tls-secret
   rules:
   - host: gateway.evarun.ru
@@ -71,4 +72,22 @@ spec:
       paths:
         - backend:
             serviceName: position
+            servicePort: http
+  - host: auth.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: auth
+            servicePort: http
+  - host: billing.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: billing
+            servicePort: http
+  - host: convey.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: convey
             servicePort: http

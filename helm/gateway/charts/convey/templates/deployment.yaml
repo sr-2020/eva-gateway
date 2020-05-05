@@ -18,6 +18,14 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /composer.html
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /composer.html
+              port: 8080
           env:
             - name: GATEWAY_HOST
               valueFrom:
