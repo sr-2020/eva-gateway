@@ -1,0 +1,20 @@
+replicaCount: 1
+
+gatewayHost: "https://gateway.evarun.ru"
+
+image:
+  repository: sr2020/eva-gateway-test
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

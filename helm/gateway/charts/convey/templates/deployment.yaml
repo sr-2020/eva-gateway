@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: convey
+spec:
+  selector:
+    matchLabels:
+      run: convey
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        run: convey
+    spec:
+      containers:
+        - name: convey
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GATEWAY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: convey-configmap
+                  key: GATEWAY_HOST
+            - name: GATEWAY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: convey
+                  key: token

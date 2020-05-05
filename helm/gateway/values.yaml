@@ -62,6 +62,12 @@ billing:
     tag: "7036598"
     pullPolicy: IfNotPresent
 
+convey:
+  image:
+    repository: sr2020/eva-gateway-test
+    tag: latest
+    pullPolicy: IfNotPresent
+
 flyway:
   image:
     repository: sr2020/db

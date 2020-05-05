@@ -13,6 +13,8 @@ jobs:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - make build tag=$IMAGE_TAG
       - make push
+      - make build-test tag=$IMAGE_TAG
+      - make push-test
 
   - stage: deploy production
     install:
@@ -27,8 +29,9 @@ jobs:
     script:
       - kubectl set image deployment/gateway gateway=sr2020/eva-gateway:$IMAGE_TAG --record
       - kubectl rollout status deployment/gateway
+      - kubectl set image deployment/convey convey=sr2020/eva-gateway-test:$IMAGE_TAG --record
+      - kubectl rollout status deployment/gateway
 
   - stage: test production
     script:
       - make test env=production
-      - cd src/tests/ && go test -v ./...

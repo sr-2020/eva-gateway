@@ -19,6 +19,9 @@ build-test:
 push:
 	docker push ${NAMESPACE}/${IMAGE}
 
+push-test:
+	docker push ${NAMESPACE}/${IMAGE_TEST}
+
 deploy:
 	{ \
 	sshpass -p $(password) ssh -o StrictHostKeyChecking=no deploy@$(server) "cd /var/services/$(SERVICE) ;\
