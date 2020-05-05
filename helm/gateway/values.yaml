@@ -21,7 +21,7 @@ image:
     pullPolicy: IfNotPresent
   gateway:
     repository: sr2020/eva-gateway
-    tag: fe98a5d
+    tag: 2bb16e4
     pullPolicy: IfNotPresent
 
 service:
@@ -33,16 +33,16 @@ global:
     host: postgres
 
 # services
-auth:
-  image:
-    repository: sr2020/eva-auth
-    tag: latest
-    pullPolicy: IfNotPresent
-
 admin-client:
   image:
     repository: sr2020/admin-client
-    tag: 4e08154
+    tag: cad242c
+    pullPolicy: IfNotPresent
+
+auth:
+  image:
+    repository: sr2020/eva-auth
+    tag: "2555e61"
     pullPolicy: IfNotPresent
 
 backup:
@@ -59,19 +59,19 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: 9cac8d9
+    tag: "7036598"
     pullPolicy: IfNotPresent
 
 flyway:
   image:
     repository: sr2020/db
-    tag: 7c70ce5
+    tag: d3a05c3
     pullPolicy: IfNotPresent
 
 rc-flyway:
   image:
     repository: sr2020/db
-    tag: b6cc10a
+    tag: fb5b550
     pullPolicy: IfNotPresent
 
 grafana:
@@ -107,19 +107,19 @@ redis:
 push:
   image:
     repository: sr2020/push
-    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
+    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
+    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: a97c7e06d06434a6c56acc704a89f4085f6e18b4
+    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
     pullPolicy: IfNotPresent
 
 rc-web:

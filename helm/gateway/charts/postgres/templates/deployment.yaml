@@ -18,8 +18,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5432
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
