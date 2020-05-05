@@ -30,7 +30,7 @@ jobs:
       - kubectl set image deployment/gateway gateway=sr2020/eva-gateway:$IMAGE_TAG --record
       - kubectl rollout status deployment/gateway
       - kubectl set image deployment/convey convey=sr2020/eva-gateway-test:$IMAGE_TAG --record
-      - kubectl rollout status deployment/gateway
+      - kubectl rollout status deployment/convey
 
   - stage: test production
     script:
