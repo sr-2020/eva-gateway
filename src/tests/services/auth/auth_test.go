@@ -1,16 +1,27 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/smartystreets/goconvey/convey"
+	"github.com/sr-2020/eva-gateway/app"
+	"github.com/sr-2020/eva-gateway/app/entity"
+	"github.com/sr-2020/eva-gateway/tests/actors"
+	"math/rand"
 	"net/http"
 	"testing"
+	"time"
 )
 
-const authHost = "http://gateway.evarun.ru/api/v1"
+const (
+	authHost = "http://gateway.evarun.ru/api/v1"
+	authLogin = "auth-service@test.com"
+	authPassword = "auth-service@test.com"
+)
 
 func TestCheck(t *testing.T) {
 	convey.Convey("Go to check auth service", t, func() {
-		authService := NewAuth(authHost)
+		cfg := app.InitConfig()
+		authService := NewAuth(cfg.Gateway + "/api/v1")
 
 		convey.Convey("Check response", func() {
 			convey.So(authService.Check(), convey.ShouldEqual, true)
@@ -19,42 +30,91 @@ func TestCheck(t *testing.T) {
 }
 
 func TestRegister(t *testing.T) {
-	authService := NewAuth(authHost)
+	cfg := app.InitConfig()
+	authService := NewAuth(cfg.Gateway + "/api/v1")
+
+	rand.Seed((time.Now()).UnixNano())
+	registerEmail := fmt.Sprintf("auth-test-%d@test.com", rand.Uint32() % 100000)
 
 	convey.Convey("Try to register with empty creds", t, func() {
 		token, statusCode, err := authService.Register(map[string]string{})
 
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
-		convey.So(token, convey.ShouldResemble, Token{})
+		convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
 	})
 
-	convey.Convey("Try to register with wrong creds", t, func() {
+	convey.Convey("Try to register with empty password", t, func() {
 		token, statusCode, err := authService.Register(map[string]string{
-			"email": "test@tat.ru",
+			"email": registerEmail,
 			"password": "",
 		})
 
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
-		convey.So(token, convey.ShouldResemble, Token{})
+		convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
 	})
+
+	convey.Convey("Register success", t, func() {
+		token, statusCode, err := authService.Register(map[string]string{
+			"email": registerEmail,
+			"password": registerEmail,
+		})
+
+		convey.So(err, convey.ShouldBeNil)
+		convey.So(statusCode, convey.ShouldEqual, http.StatusCreated)
+
+		oldToken := token
+		convey.Convey("Login", func() {
+			token, statusCode, err := authService.Auth(map[string]string{
+				"email":    registerEmail,
+				"password": registerEmail,
+			})
+
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+			convey.So(token.Id, convey.ShouldEqual, oldToken.Id)
+			convey.So(token.ApiKey, convey.ShouldNotEqual, "")
+			convey.So(token.ApiKey, convey.ShouldNotEqual, oldToken.ApiKey)
+
+			convey.Convey("Try to register with the same email", func() {
+				token, statusCode, err := authService.Register(map[string]string{
+					"email":    registerEmail,
+					"password": registerEmail,
+				})
+
+				convey.So(err, convey.ShouldNotBeNil)
+				convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
+				convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
+			})
+		})
+
+		admin := actors.NewAdmin(cfg.ApiKey, cfg.Gateway + "/api/v1")
+
+		convey.So(admin.DeleteUser(oldToken.Id), convey.ShouldBeNil)
+	})
+}
+
+func TestProfile(t *testing.T) {
+	cfg := app.InitConfig()
+	authService := NewAuth(cfg.Gateway + "/api/v1")
 
 	convey.Convey("Register or login with valid creds", t, func() {
 		token, statusCode, err := authService.Register(map[string]string{
-			"email": "test@tat.ru",
-			"password": "1234",
+			"email": authLogin,
+			"password": authPassword,
 		})
 
 		if statusCode != http.StatusCreated {
 			token, statusCode, err = authService.Auth(map[string]string{
-				"email": "test@tat.ru",
-				"password": "1234",
+				"email": authLogin,
+				"password": authPassword,
 			})
-		}
 
-		convey.So(err, convey.ShouldBeNil)
-		convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+		}
 
 		convey.So(token.Id, convey.ShouldNotEqual, 0)
 		convey.So(token.ApiKey, convey.ShouldNotEqual, "")
@@ -119,8 +179,8 @@ func TestRegister(t *testing.T) {
 
 		convey.Convey("One more time login", func() {
 			token, statusCode, err := authService.Auth(map[string]string{
-				"email": "test@tat.ru",
-				"password": "1234",
+				"email": authLogin,
+				"password": authPassword,
 			})
 
 			convey.So(err, convey.ShouldBeNil)
@@ -203,31 +263,43 @@ func TestRegister(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	authService := NewAuth(authHost)
+	cfg := app.InitConfig()
+	authService := NewAuth(cfg.Gateway + "/api/v1")
 
 	convey.Convey("Try to login with empty creds", t, func() {
 		token, statusCode, err := authService.Auth(map[string]string{})
 
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
-		convey.So(token, convey.ShouldResemble, Token{})
+		convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
 	})
 
-	convey.Convey("Try to login with wrong creds", t, func() {
+	convey.Convey("Try to login for not exists account", t, func() {
 		token, statusCode, err := authService.Auth(map[string]string{
-			"email": "wrong@tat.ru",
+			"email": "auth-wrong@test.com",
 			"password": "1234",
 		})
 
 		convey.So(err, convey.ShouldBeNil)
 		convey.So(statusCode, convey.ShouldEqual, http.StatusUnauthorized)
-		convey.So(token, convey.ShouldResemble, Token{})
+		convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
+	})
+
+	convey.Convey("Try to login with wrong creds", t, func() {
+		token, statusCode, err := authService.Auth(map[string]string{
+			"email": authLogin,
+			"password": "wrong-pass",
+		})
+
+		convey.So(err, convey.ShouldBeNil)
+		convey.So(statusCode, convey.ShouldEqual, http.StatusUnauthorized)
+		convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
 	})
 
 	convey.Convey("Login with valid creds", t, func() {
 		token, statusCode, err := authService.Auth(map[string]string{
-			"email": "test@tat.ru",
-			"password": "1234",
+			"email": authLogin,
+			"password": authPassword,
 		})
 
 		convey.So(err, convey.ShouldBeNil)
@@ -235,5 +307,20 @@ func TestLogin(t *testing.T) {
 
 		convey.So(token.Id, convey.ShouldNotEqual, 0)
 		convey.So(token.ApiKey, convey.ShouldNotEqual, "")
+
+		oldToken := token
+		convey.Convey("One more time login", func() {
+			token, statusCode, err := authService.Auth(map[string]string{
+				"email":    authLogin,
+				"password": authPassword,
+			})
+
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+			convey.So(token.Id, convey.ShouldEqual, oldToken.Id)
+			convey.So(token.ApiKey, convey.ShouldNotEqual, "")
+			convey.So(token.ApiKey, convey.ShouldNotEqual, oldToken.ApiKey)
+		})
 	})
 }

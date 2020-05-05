@@ -15,6 +15,8 @@ import (
 
 type Config struct {
 	Port          int
+	ApiKey        string
+	Gateway       string
 	Auth          string
 	Position      string
 	Billing       string
@@ -31,6 +33,8 @@ func InitConfig() Config {
 		port, _ := strconv.Atoi(os.Getenv("GATEWAY_PORT"))
 		cfg.Port = port
 
+		cfg.ApiKey = os.Getenv("GATEWAY_API_KEY")
+		cfg.Gateway = os.Getenv("GATEWAY_HOST")
 		cfg.Auth = os.Getenv("AUTH_HOST")
 		cfg.Position = os.Getenv("POSITION_HOST")
 		cfg.Billing = os.Getenv("BILLING_HOST")

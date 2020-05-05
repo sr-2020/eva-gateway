@@ -25,7 +25,7 @@ func (a *Auth) Check() bool {
 	return string(body) == "2016"
 }
 
-func (a *Auth) Auth(data map[string]string) (Token, int, error) {
+func (a *Auth) Auth(data map[string]string) (entity.AuthUserToken, int, error) {
 	requestBody, _ := json.Marshal(data)
 
 	dt := strings.NewReader(string(requestBody))
@@ -33,7 +33,7 @@ func (a *Auth) Auth(data map[string]string) (Token, int, error) {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	token := Token{}
+	token := entity.AuthUserToken{}
 	if err := json.Unmarshal(body, &token); err != nil {
 		return token, resp.StatusCode, err
 	}
@@ -41,7 +41,7 @@ func (a *Auth) Auth(data map[string]string) (Token, int, error) {
 	return token, resp.StatusCode, nil
 }
 
-func (a *Auth) Register(data map[string]string) (Token, int, error) {
+func (a *Auth) Register(data map[string]string) (entity.AuthUserToken, int, error) {
 	requestBody, _ := json.Marshal(data)
 
 	dt := strings.NewReader(string(requestBody))
@@ -49,7 +49,7 @@ func (a *Auth) Register(data map[string]string) (Token, int, error) {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	token := Token{}
+	token := entity.AuthUserToken{}
 	if err := json.Unmarshal(body, &token); err != nil {
 		return token, resp.StatusCode, err
 	}
@@ -102,4 +102,23 @@ func (a *Auth) EditProfile(apiKey string, data map[string]interface{}) (entity.P
 	}
 
 	return user, resp.StatusCode, nil
+}
+
+func (a *Auth) Delete(id int) error {
+	host := "http://auth.evarun.ru/api/v1"
+
+	client := http.Client{}
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/users/%d", host, id), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("X-User-Id", fmt.Sprintf("%d", 1))
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	_ = resp
+	return nil
 }
