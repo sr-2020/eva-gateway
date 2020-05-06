@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	authHost = "http://gateway.evarun.ru/api/v1"
 	authLogin = "auth-service@test.com"
 	authPassword = "auth-service@test.com"
 )
@@ -87,6 +86,78 @@ func TestRegister(t *testing.T) {
 				convey.So(err, convey.ShouldNotBeNil)
 				convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
 				convey.So(token, convey.ShouldResemble, entity.AuthUserToken{})
+			})
+
+			convey.Convey("Try to change email to already exists email", func() {
+				data := map[string]interface{}{
+					"email": authLogin,
+				}
+				_, statusCode, err := authService.EditProfile(token.ApiKey, data)
+
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(statusCode, convey.ShouldEqual, http.StatusBadRequest)
+			})
+
+			convey.Convey("Edit profile change email", func() {
+				newEmail := "new-" + registerEmail
+				data := map[string]interface{}{
+					"email": newEmail,
+				}
+				user, statusCode, err := authService.EditProfile(token.ApiKey, data)
+
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+				convey.So(user.Id, convey.ShouldEqual, token.Id)
+
+				convey.Convey("Login with new email", func() {
+					token, statusCode, err := authService.Auth(map[string]string{
+						"email": newEmail,
+						"password": registerEmail,
+					})
+
+					convey.So(err, convey.ShouldBeNil)
+					convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+					convey.So(token.Id, convey.ShouldEqual, user.Id)
+					convey.So(token.ApiKey, convey.ShouldNotEqual, "")
+					convey.So(token.ApiKey, convey.ShouldNotEqual, oldToken)
+
+					convey.Convey("Edit profile change password", func() {
+						newPassword := "new-" + registerEmail
+						data := map[string]interface{}{
+							"password": newPassword,
+						}
+						user, statusCode, err := authService.EditProfile(token.ApiKey, data)
+
+						convey.So(err, convey.ShouldBeNil)
+						convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+						convey.So(user.Id, convey.ShouldEqual, token.Id)
+
+						convey.Convey("Login with new password", func() {
+							token, statusCode, err := authService.Auth(map[string]string{
+								"email":    newEmail,
+								"password": newPassword,
+							})
+
+							convey.So(err, convey.ShouldBeNil)
+							convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+							convey.So(token.Id, convey.ShouldEqual, user.Id)
+							convey.So(token.ApiKey, convey.ShouldNotEqual, "")
+
+							convey.Convey("Read profile", func() {
+								user, statusCode, err := authService.ReadProfile(token.ApiKey)
+
+								convey.So(err, convey.ShouldBeNil)
+								convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+								convey.So(user.Id, convey.ShouldEqual, token.Id)
+							})
+						})
+					})
+				})
 			})
 		})
 
@@ -321,6 +392,24 @@ func TestLogin(t *testing.T) {
 			convey.So(token.Id, convey.ShouldEqual, oldToken.Id)
 			convey.So(token.ApiKey, convey.ShouldNotEqual, "")
 			convey.So(token.ApiKey, convey.ShouldNotEqual, oldToken.ApiKey)
+
+			convey.Convey("Try to read profile by old token", func() {
+				user, statusCode, err := authService.ReadProfile(oldToken.ApiKey)
+
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(statusCode, convey.ShouldEqual, http.StatusUnauthorized)
+
+				convey.So(user.Id, convey.ShouldEqual, 0)
+			})
+
+			convey.Convey("Read profile by new token", func() {
+				user, statusCode, err := authService.ReadProfile(token.ApiKey)
+
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(statusCode, convey.ShouldEqual, http.StatusOK)
+
+				convey.So(user.Id, convey.ShouldEqual, token.Id)
+			})
 		})
 	})
 }
