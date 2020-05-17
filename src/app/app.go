@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
+	"github.com/sr-2020/eva-gateway/app/adapter/config"
 	"github.com/sr-2020/eva-gateway/app/adapter/routing"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
 	"net/http"
@@ -13,27 +14,16 @@ import (
 	"time"
 )
 
-type Config struct {
-	Port          int
-	ApiKey        string
-	Gateway       string
-	Auth          string
-	Position      string
-	Billing       string
-	Push          string
-	ModelEngine   string
-	ModelsManager string
-	Redis         string
-}
-
-func InitConfig() Config {
-	var cfg Config
+func InitConfig() config.Config {
+	var cfg config.Config
 
 	if _, err := toml.DecodeFile(".env", &cfg); err != nil {
 		port, _ := strconv.Atoi(os.Getenv("GATEWAY_PORT"))
 		cfg.Port = port
 
 		cfg.ApiKey = os.Getenv("GATEWAY_API_KEY")
+		cfg.JwtSecret = os.Getenv("JWT_SECRET")
+
 		cfg.Gateway = os.Getenv("GATEWAY_HOST")
 		cfg.Auth = os.Getenv("AUTH_HOST")
 		cfg.Position = os.Getenv("POSITION_HOST")
@@ -44,10 +34,12 @@ func InitConfig() Config {
 		cfg.Redis = os.Getenv("REDIS_HOST")
 	}
 
+	config.Cfg = cfg
+
 	return cfg
 }
 
-func InitServices(cfg Config, client client.Client) map[string]service.Service {
+func InitServices(cfg config.Config, client client.Client) map[string]service.Service {
 	service.Services = map[string]service.Service{
 		"auth": {
 			Host:       cfg.Auth,
@@ -84,7 +76,7 @@ func InitServices(cfg Config, client client.Client) map[string]service.Service {
 	return service.Services
 }
 
-func Start(cfg Config) error {
+func Start(cfg config.Config) error {
 	httpClient := client.NewHttpClient(&http.Client{
 		Timeout: time.Second * 10,
 	})

@@ -36,13 +36,13 @@ global:
 admin-client:
   image:
     repository: sr2020/admin-client
-    tag: cad242c
+    tag: "855859a"
     pullPolicy: IfNotPresent
 
 auth:
   image:
     repository: sr2020/eva-auth
-    tag: "2555e61"
+    tag: "465b1dc"
     pullPolicy: IfNotPresent
 
 backup:
@@ -59,7 +59,7 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: "7036598"
+    tag: "a8141e5"
     pullPolicy: IfNotPresent
 
 convey:
@@ -71,13 +71,13 @@ convey:
 flyway:
   image:
     repository: sr2020/db
-    tag: d3a05c3
+    tag: "e4114de"
     pullPolicy: IfNotPresent
 
 rc-flyway:
   image:
     repository: sr2020/db
-    tag: fb5b550
+    tag: "3fe3485"
     pullPolicy: IfNotPresent
 
 grafana:
@@ -113,41 +113,41 @@ redis:
 push:
   image:
     repository: sr2020/push
-    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
+    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
+    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: 4bdc8a656169912aea85824a50b1348405e71fa6
+    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
     pullPolicy: IfNotPresent
 
 rc-web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: 938e5ecf
+      tag: "ae4f4e23"
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: 938e5ecf
+      tag: "ae4f4e23"
       pullPolicy: IfNotPresent
 
 web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: 938e5ecf
+      tag: "9d89eaf7"
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: 938e5ecf
+      tag: "9d89eaf7"
       pullPolicy: IfNotPresent
 
 # resources

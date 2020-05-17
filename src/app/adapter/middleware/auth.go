@@ -1,8 +1,12 @@
 package middleware
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/sr-2020/eva-gateway/app/adapter/client"
+	"github.com/sr-2020/eva-gateway/app/adapter/config"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
 	"github.com/sr-2020/eva-gateway/app/adapter/support"
@@ -96,10 +100,6 @@ func LoginMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-//func Auth(request *http.Request) error {
-//	return AuthRequest(request, cfg.Auth+"/api/v1/profile", nil)
-//}
-
 func AuthRequest(request *http.Request, url string, data interface{}) error {
 	httpClient := client.NewHttpClient(&http.Client{
 		Timeout: time.Second * 10,
@@ -111,22 +111,57 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 		return err
 	}
 
-	req.Header.Set("Authorization", request.Header.Get("Authorization"))
+	authToken := request.Header.Get("Authorization")
+	if len(authToken) <= 40 {
+		req.Header.Set("Authorization", authToken)
 
-	var authUser entity.AuthUser
-	resp, err := httpClient.ProxyData(req, &authUser)
-	if err != nil {
-		log.Println(err)
-		return err
+		var authUser entity.AuthUser
+		resp, err := httpClient.ProxyData(req, &authUser)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		defer resp.Body.Close()
+
+		if authUser.Id == 0 {
+			return errors.New("Unauthorize")
+		}
+
+		request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
+		return nil
 	}
-	defer resp.Body.Close()
 
-	if authUser.Id == 0 {
-		return errors.New("Unauthorize")
+	if len(authToken) == 0 {
+		authCookie, err := request.Cookie("Authorization")
+		if err != nil {
+			fmt.Println(err)
+		}
+		authToken = authCookie.Value
 	}
 
-	request.Header.Set("X-User-Id", strconv.Itoa(authUser.Id))
+	token, err := jwt.Parse(authToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
 
-	return nil
+		hmacSecret, err := base64.StdEncoding.DecodeString(config.Cfg.JwtSecret)
+		if err != nil {
+			return nil, fmt.Errorf("JWT Secret is invalid: %v", err)
+		}
+
+		return hmacSecret, nil
+	})
+
+	if token == nil {
+		return fmt.Errorf("JWT Token is invalid")
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if modelId, ok := claims["sub"].(string); ok {
+			request.Header.Set("X-User-Id", modelId)
+			return nil
+		}
+	}
+
+	return fmt.Errorf("JWT Token is invalid")
 }
-
