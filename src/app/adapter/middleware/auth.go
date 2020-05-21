@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -111,8 +112,15 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 		return err
 	}
 
-	authToken := request.Header.Get("Authorization")
-	if len(authToken) <= 40 {
+	authTokenHeader := strings.Split(request.Header.Get("Authorization"), " ")
+	authToken := ""
+	if len(authTokenHeader) == 2 {
+		authToken = authTokenHeader[1]
+	} else if len(authTokenHeader) == 1 {
+		authToken = authTokenHeader[0]
+	}
+
+	if len(authToken) > 0 && len(authToken) <= 40 {
 		req.Header.Set("Authorization", authToken)
 
 		var authUser entity.AuthUser
@@ -136,6 +144,9 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 		if err != nil {
 			fmt.Println(err)
 		}
+		if authCookie == nil {
+			return fmt.Errorf("Authorization cookie is invalid or empty.")
+		}
 		authToken = authCookie.Value
 	}
 
@@ -157,8 +168,8 @@ func AuthRequest(request *http.Request, url string, data interface{}) error {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if modelId, ok := claims["sub"].(string); ok {
-			request.Header.Set("X-User-Id", modelId)
+		if modelId, ok := claims["modelId"].(float64); ok {
+			request.Header.Set("X-User-Id", strconv.Itoa(int(modelId)))
 			return nil
 		}
 	}
