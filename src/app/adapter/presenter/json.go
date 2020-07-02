@@ -13,6 +13,13 @@ func NewJson() Json {
 }
 
 func (j Json) Write(w http.ResponseWriter, data interface{}, statusCode int) error {
+	response, ok := data.([]byte)
+	if ok {
+		w.WriteHeader(statusCode)
+		_, _ = w.Write(response)
+		return nil
+	}
+
 	response, err := json.Marshal(data)
 	if err != nil {
 		return err

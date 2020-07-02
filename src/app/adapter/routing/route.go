@@ -10,6 +10,7 @@ import (
 	"github.com/sr-2020/eva-gateway/app/adapter/middleware"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
+	"github.com/sr-2020/eva-gateway/app/adapter/support"
 	"log"
 	"net/http"
 	"net/url"
@@ -162,6 +163,18 @@ func ProxyHandler(pr presenter.Interface) http.HandlerFunc {
 			return
 		}
 		defer res.Body.Close()
+
+		if data == nil {
+			body, err := support.GetBody(&res.Body)
+			if err != nil {
+				_ = pr.Write(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			_ = pr.Write(w, body, res.StatusCode)
+			return
+		}
+
 		_ = pr.Write(w, data, res.StatusCode)
 	}
 }
