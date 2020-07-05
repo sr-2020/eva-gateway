@@ -21,7 +21,7 @@ image:
     pullPolicy: IfNotPresent
   gateway:
     repository: sr2020/eva-gateway
-    tag: 2bb16e4
+    tag: 244e2a4
     pullPolicy: IfNotPresent
 
 service:
@@ -36,13 +36,13 @@ global:
 admin-client:
   image:
     repository: sr2020/admin-client
-    tag: "855859a"
+    tag: "b987759"
     pullPolicy: IfNotPresent
 
 auth:
   image:
     repository: sr2020/eva-auth
-    tag: "465b1dc"
+    tag: "2555e61"
     pullPolicy: IfNotPresent
 
 backup:
@@ -59,7 +59,7 @@ backup:
 billing:
   image:
     repository: sr2020/billingapi
-    tag: "a8141e5"
+    tag: "d263a32"
     pullPolicy: IfNotPresent
 
 convey:
@@ -71,13 +71,13 @@ convey:
 flyway:
   image:
     repository: sr2020/db
-    tag: "e4114de"
+    tag: "0eb548a"
     pullPolicy: IfNotPresent
 
 rc-flyway:
   image:
     repository: sr2020/db
-    tag: "3fe3485"
+    tag: "0eb548a"
     pullPolicy: IfNotPresent
 
 grafana:
@@ -113,41 +113,41 @@ redis:
 push:
   image:
     repository: sr2020/push
-    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
+    tag: 491a5747f7cf66518f8aee596a18dac49e067e3f
     pullPolicy: IfNotPresent
 
 model-engine:
   image:
     repository: sr2020/model-engine
-    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
+    tag: 491a5747f7cf66518f8aee596a18dac49e067e3f
     pullPolicy: IfNotPresent
 
 models-manager:
   image:
     repository: sr2020/models-manager
-    tag: d3f848bead5e45cb208ec3678d7d4e328c542af9
+    tag: 491a5747f7cf66518f8aee596a18dac49e067e3f
     pullPolicy: IfNotPresent
 
 rc-web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: "ae4f4e23"
+      tag: "204eef4c"
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: "ae4f4e23"
+      tag: "204eef4c"
       pullPolicy: IfNotPresent
 
 web:
   image:
     backend:
       repository: sr2020/testjpa-backend
-      tag: "9d89eaf7"
+      tag: "7afda777"
       pullPolicy: IfNotPresent
     frontend:
       repository: sr2020/testjpa-frontend
-      tag: "9d89eaf7"
+      tag: "7afda777"
       pullPolicy: IfNotPresent
 
 # resources
