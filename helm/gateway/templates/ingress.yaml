@@ -19,6 +19,7 @@ spec:
         - billing.evarun.ru
         - auth.evarun.ru
         - convey.evarun.ru
+        - marketplace.evarun.ru
       secretName: tls-secret
   rules:
   - host: gateway.evarun.ru
@@ -92,4 +93,10 @@ spec:
       paths:
         - backend:
             serviceName: convey
+            servicePort: http
+  - host: marketplace.evarun.ru
+    http:
+      paths:
+        - backend:
+            serviceName: marketplace
             servicePort: http
