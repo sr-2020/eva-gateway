@@ -5,6 +5,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/sr-2020/eva-gateway/app/adapter/presenter"
 	"github.com/sr-2020/eva-gateway/app/adapter/service"
+	"github.com/sr-2020/eva-gateway/app/adapter/support"
 	"github.com/sr-2020/eva-gateway/app/entity"
 	"github.com/sr-2020/eva-gateway/app/usecases"
 	"io/ioutil"
@@ -17,9 +18,7 @@ import (
 
 func GetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Methods", "*")
-		w.Header().Add("Access-Control-Allow-Headers", "*")
+		support.SetCorsHeaders(w, r.Header.Get("origin"))
 
 		key := ps.ByName("key")
 
@@ -38,9 +37,7 @@ func GetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 
 func SetConfig(pr presenter.Interface, client *redis.Client) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Methods", "*")
-		w.Header().Add("Access-Control-Allow-Headers", "*")
+		support.SetCorsHeaders(w, r.Header.Get("origin"))
 
 		key := ps.ByName("key")
 

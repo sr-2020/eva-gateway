@@ -26,9 +26,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			log.Println(err)
 
 			// Set CORS headers
-			w.Header().Add("Access-Control-Allow-Origin", "*")
-			w.Header().Add("Access-Control-Allow-Methods", "*")
-			w.Header().Add("Access-Control-Allow-Headers", "*")
+			support.SetCorsHeaders(w, r.Header.Get("origin"))
 
 			pr := presenter.NewJson()
 			pr.Write(w, struct{}{}, 401)

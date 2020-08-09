@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 )
 
@@ -45,4 +46,15 @@ func SetInterfaceToBody(data interface{}, body *io.ReadCloser) error {
 	*body = ioutil.NopCloser(strings.NewReader(string(bodyResp)))
 
 	return nil
+}
+
+func SetCorsHeaders(w http.ResponseWriter, origin string) {
+	if origin == "" {
+		origin = "*"
+	}
+
+	w.Header().Add("Access-Control-Allow-Origin", origin)
+	w.Header().Add("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE,HEAD,PATCH")
+	w.Header().Add("Access-Control-Allow-Credentials", "true")
+	w.Header().Add("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type,Accept")
 }
