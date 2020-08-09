@@ -56,7 +56,7 @@ func InitRoute(prefix string, router *httprouter.Router, redisClient *redis.Clie
 
 	ServiceRouter(router, pr, services, middleware.ServiceMiddleware{
 		Global: []middleware.Middleware{
-			middleware.AuthMiddleware,
+			middleware.AuthWithAnonymousMiddleware,
 			middleware.CorsMiddleware,
 		},
 		Route: map[string][]middleware.Middleware{
