@@ -21,7 +21,14 @@ func EnableCors(router *httprouter.Router) {
 	
 	router.HandleOPTIONS = true
 	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		support.SetCorsHeaders(w, r.Header.Get("origin"))
+
+		if r.Header.Get("Access-Control-Request-Method") != "" {
+			// Set CORS headers
+			header := w.Header()
+			header.Set("Access-Control-Allow-Methods", r.Header.Get("Allow"))
+			header.Set("Access-Control-Allow-Origin", "*")
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
